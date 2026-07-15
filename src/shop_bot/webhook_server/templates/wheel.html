@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Колесо фортуны{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+  <h1 class="text-2xl font-black text-white flex items-center gap-2">🎡 Колесо фортуны</h1>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}{% for cat, m in msgs %}
+      <div class="rounded-xl px-4 py-3 text-sm {{ 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' if cat=='success' else 'bg-red-500/15 text-red-300 border border-red-500/30' }}">{{ m }}</div>
+    {% endfor %}{% endif %}
+  {% endwith %}
+
+  <form method="post" class="flex flex-wrap items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="toggle">
+    {% if wheel_enabled %}
+      <span class="inline-flex items-center gap-2 text-emerald-300 text-sm font-bold">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>Колесо ВКЛЮЧЕНО — видно в веб-аппе
+      </span>
+      <button type="submit" class="ml-auto bg-red-500/80 hover:bg-red-500 text-white text-sm font-bold px-4 py-2 rounded-xl">Выключить колесо</button>
+    {% else %}
+      <span class="inline-flex items-center gap-2 text-red-300 text-sm font-bold">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>Колесо ВЫКЛЮЧЕНО — скрыто из веб-аппа
+      </span>
+      <button type="submit" class="ml-auto bg-emerald-500/80 hover:bg-emerald-500 text-black text-sm font-bold px-4 py-2 rounded-xl">Включить колесо</button>
+    {% endif %}
+  </form>
+
+  <div class="bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white/70 leading-relaxed">
+    <b class="text-white">Как работает:</b> выигрывается ТОЛЬКО <b>VPN-время</b> (вес &gt; 0). Дорогие призы (техника/кэш) ставь с <b>весом 0</b> — они на колесе для вида (маркетинг), НЕ выигрываются. Спины начисляются автоматически за покупку/продление (1 мес → 1, 3 → 2, 6 → 3, 12 → 6). Результат решает сервер. Тип: <b>Витрина</b> = не выигрывается, <b>VPN дни/месяцы</b> = продлевает ключ на «Кол-во».
+  </div>
+
+  {% set total_weight = prizes | sum(attribute='weight') %}
+  <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+    <h2 class="text-lg font-bold text-white mb-4">Призы ({{ prizes|length }}) · сумма весов: {{ total_weight }}</h2>
+    <div class="hidden sm:flex items-center gap-2 text-xs text-white/40 mb-1 px-1">
+      <span class="w-12">Эмодзи</span><span class="w-40">Название</span><span class="w-40">Тип</span><span class="w-16">Кол-во</span><span class="w-20">Вес</span><span class="w-16">Шанс</span><span class="w-14">Поряд.</span>
+    </div>
+    {% for p in prizes %}
+    <div class="flex flex-wrap items-center gap-2 py-2 border-t border-white/5">
+      <form method="post" class="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="update">
+        <input type="hidden" name="prize_id" value="{{ p.id }}">
+        <input name="emoji" value="{{ p.emoji or '' }}" class="w-12 bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-center text-sm">
+        <input name="label" value="{{ p.label or '' }}" class="w-40 bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-sm">
+        <select name="kind" class="w-40 bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-sm">
+          <option value="display" {% if p.kind=='display' %}selected{% endif %}>Витрина (не выигр.)</option>
+          <option value="vpn_days" {% if p.kind=='vpn_days' %}selected{% endif %}>VPN дни</option>
+          <option value="vpn_months" {% if p.kind=='vpn_months' %}selected{% endif %}>VPN месяцы</option>
+        </select>
+        <input type="number" name="amount" value="{{ p.amount or 0 }}" class="w-16 bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-sm">
+        <input type="number" name="weight" value="{{ p.weight or 0 }}" class="w-20 bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-sm">
+        <span class="w-16 text-cyan-300 text-sm">{% if p.weight and total_weight %}{{ '%.2f'|format(100 * p.weight / total_weight) }}%{% else %}—{% endif %}</span>
+        <input type="number" name="sort_order" value="{{ p.sort_order or 0 }}" class="w-14 bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-sm">
+        <button type="submit" class="bg-cyan-500 text-black text-xs font-bold px-3 py-1.5 rounded">Сохранить</button>
+      </form>
+      <form method="post" onsubmit="return confirm('Удалить приз «{{ p.label }}»?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="delete">
+        <input type="hidden" name="prize_id" value="{{ p.id }}">
+        <button type="submit" class="bg-red-500/20 text-red-300 border border-red-500/30 text-xs px-3 py-1.5 rounded">Удалить</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+    <h2 class="text-lg font-bold text-white mb-3">Добавить приз</h2>
+    <form method="post" class="flex flex-wrap items-end gap-2">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="add">
+      <div><label class="block text-xs text-white/50 mb-1">Эмодзи</label><input name="emoji" class="w-14 bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-center text-sm"></div>
+      <div><label class="block text-xs text-white/50 mb-1">Название</label><input name="label" class="w-40 bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-sm"></div>
+      <div><label class="block text-xs text-white/50 mb-1">Тип</label><select name="kind" class="bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-sm"><option value="display">Витрина</option><option value="vpn_days">VPN дни</option><option value="vpn_months">VPN месяцы</option></select></div>
+      <div><label class="block text-xs text-white/50 mb-1">Кол-во</label><input type="number" name="amount" value="0" class="w-16 bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-sm"></div>
+      <div><label class="block text-xs text-white/50 mb-1">Вес</label><input type="number" name="weight" value="0" class="w-20 bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-sm"></div>
+      <div><label class="block text-xs text-white/50 mb-1">Порядок</label><input type="number" name="sort_order" value="0" class="w-14 bg-black/30 border border-white/10 rounded px-2 py-1.5 text-white text-sm"></div>
+      <button type="submit" class="bg-emerald-500 text-black font-bold px-4 py-2 rounded-xl text-sm">Добавить</button>
+    </form>
+  </div>
+
+  <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+    <h2 class="text-lg font-bold text-white mb-3">Последние спины ({{ spin_log|length }})</h2>
+    {% if spin_log %}
+    <div class="overflow-x-auto"><table class="w-full text-sm">
+      <thead><tr class="text-white/50 text-left"><th class="py-2 pr-3">Дата</th><th class="py-2 pr-3">Юзер</th><th class="py-2">Приз</th></tr></thead>
+      <tbody>
+      {% for s in spin_log %}
+      <tr class="border-t border-white/5">
+        <td class="py-1.5 pr-3 text-white/50 whitespace-nowrap">{{ s.created_at }}</td>
+        <td class="py-1.5 pr-3 text-white">{% if s.username %}@{{ s.username }}{% else %}{{ s.user_id }}{% endif %}</td>
+        <td class="py-1.5 text-white">{{ s.prize_label }}{% if s.kind in ('vpn_days','vpn_months') and s.amount %} ({{ s.amount }}{{ 'д' if s.kind=='vpn_days' else 'мес' }}){% endif %}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table></div>
+    {% else %}<p class="text-white/50 text-sm">Спинов пока нет.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

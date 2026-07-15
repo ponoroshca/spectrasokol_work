@@ -1,0 +1,46 @@
+# ─── OS / editor noise ───────────────────────────────────────────────
+.DS_Store
+*.log
+
+# ─── Python ──────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ─── Секреты окружения (SHOPBOT_SECRET_KEY) — только на сервере, не в git ───
+.env
+.env.*
+!.env.example
+
+# ─── Node / tooling deps (regenerable) ───────────────────────────────
+node_modules/
+
+# ─── Databases & ЛЮБЫЕ данные пользователей — НИКОГДА не коммитим ─────
+# БД создаётся на сервере при первом старте (initialize_db). PII в git недопустим.
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+users.db*
+remnawave.db
+*.sql
+*.csv
+*.bak
+
+# ─── Runtime / бэкапы / локальные артефакты ──────────────────────────
+backups/
+logs/
+.ai-backups/
+release_bundle/
+deploy/
+*.tar.gz
+*.sha256
+
+# ─── Крупная локальная медиа ─────────────────────────────────────────
+*.mp4
+/screenshots/
+
+# Загрузки веб-чата поддержки (рантайм)
+src/shop_bot/webapp/module/support-media/

@@ -1,0 +1,411 @@
+﻿{% set hints = stats.get('metric_hints', {}) %}
+{% set users_total = stats.get('users_total', stats.get('user_count_all')) %}
+{% set revenue = stats.get('revenue_shm', stats.get('total_spent')) %}
+{% set payment_count = stats.get('shm_payment_count', stats.get('payment_count')) %}
+{% set active_now = stats.get('active_services_now', stats.get('active_keys_count')) %}
+{% set paying = stats.get('paying_clients', stats.get('active_buyers_count')) %}
+
+{% macro fmt_rub(v) -%}
+{%- if v is not none -%}
+{{- "{:,.1f}".format(v|float).replace(",", " ").replace(".0", "") -}} ₽
+{%- else -%}—{%- endif -%}
+{%- endmacro %}
+
+{% macro stat_hint(key) -%}
+{%- if key and hints.get(key) -%}
+<button type="button" class="ml-1 inline-flex items-center text-white/25 hover:text-white/60 transition-colors shrink-0" title="{{ hints[key] }}" aria-label="Пояснение">
+    <span class="material-symbols-outlined text-[14px]">help</span>
+</button>
+{%- endif -%}
+{%- endmacro %}
+
+<!-- ===== Основные показатели ===== -->
+<div class="col-span-full flex items-center gap-2 py-0.5">
+    <span class="text-[9px] font-black uppercase tracking-[0.22em] text-primary/80">Основное</span>
+    <span class="h-px flex-1 bg-white/[0.06]"></span>
+    <span class="text-[9px] font-bold text-white/25 uppercase tracking-wider">{{ stats.get('period_label', '') }}</span>
+</div>
+
+<!-- Пользователи -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[88px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-sky-500/[0.07] rounded-full blur-2xl pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between gap-2">
+        <div class="min-w-0">
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-1.5 flex items-center">Пользователи{{ stat_hint('users_total') }}</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tabular-nums leading-none">
+                {% if users_total is not none %}{{ users_total }}{% else %}—{% endif %}
+            </h4>
+            <p class="text-[10px] text-white/40 mt-2">новых за период: <span class="text-sky-300/90 font-bold tabular-nums">{{ stats.get('user_count', '—') }}</span>{{ stat_hint('users_period') }}</p>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/15 flex items-center justify-center text-sky-400 shrink-0"><span class="material-symbols-outlined text-base">group</span></div>
+    </div>
+</div>
+
+<!-- Выручка -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-emerald-500/20 rounded-[1.1rem] p-3.5 sm:p-4 min-h-[88px] group hover:-translate-y-0.5 hover:border-emerald-500/30 shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-24 h-24 bg-green-500/[0.09] rounded-full blur-2xl pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between gap-2">
+        <div class="min-w-0">
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-1.5 flex items-center">Выручка{{ stat_hint('revenue_shm') }}</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-green-400 tabular-nums leading-none">
+                {{ fmt_rub(revenue) }}
+            </h4>
+            <p class="text-[10px] text-white/40 mt-2">
+                <span class="text-green-300/80 font-bold tabular-nums">{{ payment_count if payment_count is not none else '—' }}</span> платежей · без ручных
+            </p>
+            <p class="text-[10px] text-amber-300/50 mt-1">
+                ручные: <span class="font-bold tabular-nums">{{ fmt_rub(stats.get('manual_revenue', 0)) }}</span>
+                ({{ stats.get('manual_payment_count', 0) }}){{ stat_hint('revenue_manual') }}
+            </p>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-green-500/10 border border-green-500/15 flex items-center justify-center text-green-400 shrink-0"><span class="material-symbols-outlined text-base">payments</span></div>
+    </div>
+</div>
+
+<!-- Услуги -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[88px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-blue-500/[0.07] rounded-full blur-2xl pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between gap-2">
+        <div class="min-w-0">
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-1.5 flex items-center">Услуги ACTIVE{{ stat_hint('services_active') }}</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tabular-nums leading-none">
+                {% if active_now is not none %}{{ active_now }}{% else %}—{% endif %}
+            </h4>
+            <p class="text-[10px] text-white/40 mt-2">новых за период: <span class="text-blue-300/90 font-bold tabular-nums">{{ stats.get('total_keys', '—') }}</span>{{ stat_hint('services_new') }}</p>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/15 flex items-center justify-center text-blue-400 shrink-0"><span class="material-symbols-outlined text-base">vpn_key</span></div>
+    </div>
+</div>
+
+<!-- Платящие -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[88px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-violet-500/[0.07] rounded-full blur-2xl pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between gap-2">
+        <div class="min-w-0">
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-1.5 flex items-center">Платящих за период{{ stat_hint('paying_clients') }}</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-violet-300 tabular-nums leading-none">
+                {% if paying is not none %}{{ paying }}{% else %}—{% endif %}
+            </h4>
+            <p class="text-[10px] text-white/35 mt-2">уникальные клиенты с авто-оплатой</p>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/15 flex items-center justify-center text-violet-400 shrink-0"><span class="material-symbols-outlined text-base">person_check</span></div>
+    </div>
+</div>
+
+<!-- Прибыль 7д -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-lime-500/15 rounded-[1.1rem] p-3.5 sm:p-4 min-h-[88px] group hover:-translate-y-0.5 hover:border-lime-500/25 shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-lime-500/[0.07] rounded-full blur-2xl pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between gap-2">
+        <div class="min-w-0">
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-1.5 flex items-center">Прибыль 7д{{ stat_hint('profit_7d') }}</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-lime-400 tabular-nums leading-none">
+                {% if stats.get('profit_7d') is not none %}{{ fmt_rub(stats.profit_7d) }}{% else %}—{% endif %}
+            </h4>
+            <p class="text-[10px] text-white/40 mt-2"><span class="font-bold tabular-nums text-lime-300/80">{{ stats.get('profit_7d_count', '—') }}</span> платежей · 7 суток · без ручных</p>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-lime-500/10 border border-lime-500/15 flex items-center justify-center text-lime-400 shrink-0"><span class="material-symbols-outlined text-base">calendar_view_week</span></div>
+    </div>
+</div>
+
+<div class="col-span-full flex items-center gap-2 py-0.5 mt-1">
+    <span class="text-[9px] font-black uppercase tracking-[0.22em] text-white/25">Инфра и шлюзы</span>
+    <span class="h-px flex-1 bg-white/[0.06]"></span>
+</div>
+
+<!-- Серверов -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-yellow-500/[0.07] rounded-full blur-2xl group-hover:bg-yellow-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between">
+        <div>
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">Серверов</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                {% if stats.get('host_count') is not none %}
+                {{ stats.host_count }}
+                {% else %}
+                <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-yellow-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-yellow-400 animate-spin"></div></div>
+                {% endif %}
+            </h4>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-yellow-500/10 border border-yellow-500/15 flex items-center justify-center text-yellow-400 shadow-lg shadow-yellow-500/5 shrink-0">
+            <span class="material-symbols-outlined text-base">dns</span>
+        </div>
+    </div>
+</div>
+
+<!-- Тикеты -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-red-500/[0.07] rounded-full blur-2xl group-hover:bg-red-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between">
+        <div>
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">Тикеты</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                {% if open_tickets_count is not none %}
+                {{ open_tickets_count }}
+                {% else %}
+                <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-red-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-red-400 animate-spin"></div></div>
+                {% endif %}
+            </h4>
+            <p class="text-[10px] text-white/35 mt-2">открытые обращения</p>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-red-500/10 border border-red-500/15 flex items-center justify-center text-red-400 shadow-lg shadow-red-500/5 shrink-0">
+            <span class="material-symbols-outlined text-base">confirmation_number</span>
+        </div>
+    </div>
+</div>
+
+<!-- YooKassa -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300 payment-stat-block">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-indigo-500/[0.07] rounded-full blur-2xl group-hover:bg-indigo-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between">
+        <div>
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">YooKassa</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                {% if stats.get('yookassa_income') is not none %}
+                {{ fmt_rub(stats.get('yookassa_income', 0)) }}
+                {% else %}
+                <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-indigo-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-indigo-400 animate-spin"></div></div>
+                {% endif %}
+            </h4>
+            <p class="text-[10px] text-white/35 mt-2">за выбранный период</p>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/15 flex items-center justify-center text-indigo-400 shadow-lg shadow-indigo-500/5 shrink-0">
+            <span class="material-symbols-outlined text-base">account_balance_wallet</span>
+        </div>
+    </div>
+</div>
+
+<!-- Platega -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300 payment-stat-block">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-cyan-500/[0.07] rounded-full blur-2xl group-hover:bg-cyan-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between">
+        <div>
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">Platega</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                {% if stats.get('platega_income') is not none %}
+                {{ fmt_rub(stats.get('platega_income', 0)) }}
+                {% else %}
+                <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-cyan-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-cyan-400 animate-spin"></div></div>
+                {% endif %}
+            </h4>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/15 flex items-center justify-center text-cyan-400 shadow-lg shadow-cyan-500/5 shrink-0">
+            <span class="material-symbols-outlined text-base">credit_card</span>
+        </div>
+    </div>
+</div>
+
+<!-- TG Stars -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300 payment-stat-block">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-amber-500/[0.07] rounded-full blur-2xl group-hover:bg-amber-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between">
+        <div>
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">TG Stars</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                {% if stats.get('stars_income') is not none %}
+                {{ fmt_rub(stats.get('stars_income', 0)) }}
+                {% else %}
+                <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-amber-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-amber-400 animate-spin"></div></div>
+                {% endif %}
+            </h4>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/15 flex items-center justify-center text-amber-400 shadow-lg shadow-amber-500/5 shrink-0">
+            <span class="material-symbols-outlined text-base">grade</span>
+        </div>
+    </div>
+</div>
+
+<!-- CryptoBot -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300 payment-stat-block">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-violet-500/[0.07] rounded-full blur-2xl group-hover:bg-violet-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between">
+        <div>
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">CryptoBot</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                {% if stats.get('cryptobot_income') is not none %}
+                {{ fmt_rub(stats.get('cryptobot_income', 0)) }}
+                {% else %}
+                <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-violet-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-violet-400 animate-spin"></div></div>
+                {% endif %}
+            </h4>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/15 flex items-center justify-center text-violet-400 shadow-lg shadow-violet-500/5 shrink-0">
+            <span class="material-symbols-outlined text-base">currency_bitcoin</span>
+        </div>
+    </div>
+</div>
+
+<!-- Heleket / TonConnect toggle -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300 payment-stat-block"
+    id="toggle-stats-card">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-emerald-500/[0.07] rounded-full blur-2xl group-hover:bg-emerald-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex flex-col h-full">
+        <div class="flex items-start justify-between">
+            <div id="view-stat-heleket" class="stat-view">
+                <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">Heleket</p>
+                <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                    {% if stats.get('heleket_income') is not none %}
+                    {{ fmt_rub(stats.get('heleket_income', 0)) }}
+                    {% else %}
+                    <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-emerald-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-emerald-400 animate-spin"></div></div>
+                    {% endif %}
+                </h4>
+            </div>
+
+            <div id="view-stat-ton" class="stat-view hidden">
+                <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">TonConnect</p>
+                <h4 class="text-xl sm:text-[22px] font-black text-emerald-300 tracking-tight leading-none tabular-nums">
+                    {% if stats.get('tonconnect_income') is not none %}
+                    {{ fmt_rub(stats.get('tonconnect_income', 0)) }}
+                    {% else %}
+                    <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-emerald-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-emerald-400 animate-spin"></div></div>
+                    {% endif %}
+                </h4>
+            </div>
+
+            <button onclick="toggleStat(event)"
+                class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/5 hover:bg-emerald-500/20 transition-all duration-300 shrink-0">
+                <span class="material-symbols-outlined text-base" id="toggle-stat-icon">payments</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const current = localStorage.getItem('dashboard_toggle_stat') || 'heleket';
+            applyToggleStat(current);
+        })();
+
+        window.toggleStat = function (event) {
+            if (event) event.stopPropagation();
+            const current = localStorage.getItem('dashboard_toggle_stat') || 'heleket';
+            const next = current === 'heleket' ? 'ton' : 'heleket';
+            localStorage.setItem('dashboard_toggle_stat', next);
+            applyToggleStat(next);
+        };
+
+        function applyToggleStat(mode) {
+            const hView = document.getElementById('view-stat-heleket');
+            const tView = document.getElementById('view-stat-ton');
+            const icon = document.getElementById('toggle-stat-icon');
+
+            if (!hView || !tView) return;
+
+            if (mode === 'heleket') {
+                hView.classList.remove('hidden');
+                tView.classList.add('hidden');
+                if (icon) icon.innerText = 'payments';
+            } else {
+                hView.classList.add('hidden');
+                tView.classList.remove('hidden');
+                if (icon) icon.innerText = 'account_balance_wallet';
+            }
+        }
+    </script>
+</div>
+
+<div class="col-span-full flex items-center gap-2 py-0.5 mt-1">
+    <span class="text-[9px] font-black uppercase tracking-[0.22em] text-white/25">Аудитория</span>
+    <span class="h-px flex-1 bg-white/[0.06]"></span>
+</div>
+
+<!-- Не купили ключ -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-gray-500/[0.07] rounded-full blur-2xl group-hover:bg-gray-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between">
+        <div>
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">Не купили ключ</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                {% if stats.get('no_purchases_count') is not none %}
+                {{ stats.no_purchases_count }}
+                {% else %}
+                <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-gray-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-gray-400 animate-spin"></div></div>
+                {% endif %}
+            </h4>
+        </div>
+        <button onclick="openUserGroupModal('no_purchases', 'Не купили ключ')" class="w-8 h-8 rounded-xl bg-gray-500/10 border border-gray-500/15 flex items-center justify-center text-gray-400 shadow-lg shadow-gray-500/5 hover:bg-gray-500/20 hover:scale-105 transition-all duration-300 cursor-pointer shrink-0">
+            <span class="material-symbols-outlined text-base">person_off</span>
+        </button>
+    </div>
+</div>
+
+<!-- Нет активных -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-orange-500/[0.07] rounded-full blur-2xl group-hover:bg-orange-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between">
+        <div>
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">Нет активных</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                {% if stats.get('inactive_buyers_count') is not none %}
+                {{ stats.inactive_buyers_count }}
+                {% else %}
+                <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-orange-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-orange-400 animate-spin"></div></div>
+                {% endif %}
+            </h4>
+        </div>
+        <button onclick="openUserGroupModal('inactive_buyers', 'Нет активных (Покупали)')" class="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/15 flex items-center justify-center text-orange-400 shadow-lg shadow-orange-500/5 hover:bg-orange-500/20 hover:scale-105 transition-all duration-300 cursor-pointer shrink-0">
+            <span class="material-symbols-outlined text-base">history</span>
+        </button>
+    </div>
+</div>
+
+<!-- На триале -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-pink-500/[0.07] rounded-full blur-2xl group-hover:bg-pink-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between">
+        <div>
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">На триале</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                {% if stats.get('trials_count') is not none %}
+                {{ stats.trials_count }}
+                {% else %}
+                <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-pink-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-pink-400 animate-spin"></div></div>
+                {% endif %}
+            </h4>
+            <p class="text-[10px] text-white/35 mt-2">пробные подписки за период</p>
+        </div>
+        <button onclick="openUserGroupModal('trials', 'Пользователи на триале')" class="w-8 h-8 rounded-xl bg-pink-500/10 border border-pink-500/15 flex items-center justify-center text-pink-400 shadow-lg shadow-pink-500/5 hover:bg-pink-500/20 hover:scale-105 transition-all duration-300 cursor-pointer shrink-0">
+            <span class="material-symbols-outlined text-base">card_giftcard</span>
+        </button>
+    </div>
+</div>
+
+<!-- Купили ключ -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-teal-500/[0.07] rounded-full blur-2xl group-hover:bg-teal-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between">
+        <div>
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">Купили ключ</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                {% if stats.get('active_buyers_count') is not none %}
+                {{ stats.active_buyers_count }}
+                {% else %}
+                <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-teal-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-teal-400 animate-spin"></div></div>
+                {% endif %}
+            </h4>
+        </div>
+        <button onclick="openUserGroupModal('active_buyers', 'Покупатели с активным ключом')" class="w-8 h-8 rounded-xl bg-teal-500/10 border border-teal-500/15 flex items-center justify-center text-teal-400 shadow-lg shadow-teal-500/5 hover:bg-teal-500/20 hover:scale-105 transition-all duration-300 cursor-pointer shrink-0">
+            <span class="material-symbols-outlined text-base">verified_user</span>
+        </button>
+    </div>
+</div>
+
+<!-- Активные ключи -->
+<div class="relative overflow-hidden bg-[#0b0f0e]/80 border border-white/[0.08] rounded-[1.1rem] p-3.5 sm:p-4 min-h-[76px] group hover:-translate-y-0.5 hover:border-white/[0.12] shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-300">
+    <div class="absolute -top-6 -right-6 w-20 h-20 bg-fuchsia-500/[0.07] rounded-full blur-2xl group-hover:bg-fuchsia-500/[0.12] transition-colors pointer-events-none"></div>
+    <div class="relative z-10 flex items-start justify-between">
+        <div>
+            <p class="text-white/30 text-[9px] font-black uppercase tracking-[0.18em] mb-2 truncate">Активные ключи</p>
+            <h4 class="text-xl sm:text-[22px] font-black text-white tracking-tight leading-none tabular-nums">
+                {% if stats.get('active_keys_count') is not none %}
+                {{ stats.active_keys_count }}
+                {% else %}
+                <div class="relative w-5 h-5 inline-block"><div class="absolute inset-0 rounded-full border border-fuchsia-500/20"></div><div class="absolute inset-0.5 rounded-full border-2 border-white/5 border-t-fuchsia-400 animate-spin"></div></div>
+                {% endif %}
+            </h4>
+            <p class="text-[10px] text-white/35 mt-2">по группам ShopBot</p>
+        </div>
+        <button onclick="openUserGroupModal('active_keys', 'Все активные ключи')" class="w-8 h-8 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/15 flex items-center justify-center text-fuchsia-400 shadow-lg shadow-fuchsia-500/5 hover:bg-fuchsia-500/20 hover:scale-105 transition-all duration-300 cursor-pointer shrink-0">
+            <span class="material-symbols-outlined text-base">vpn_key</span>
+        </button>
+    </div>
+</div>

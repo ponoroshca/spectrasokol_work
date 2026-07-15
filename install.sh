@@ -1,0 +1,574 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+PURPLE='\033[0;35m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+REPO_URL="git@github.com:ponoroshca/adminka_work.git"
+REPO_URL_HTTPS="https://github.com/ponoroshca/adminka_work.git"
+PROJECT_NAME="remnawave-shopbot"
+
+# === ИСПРАВЛЕНИЕ ПУТИ === 
+PROJECT_DIR="$HOME/$PROJECT_NAME"
+    
+# На всякий случай проверяем текущую папку, если вдруг установили в нестандартное место
+if [[ ! -d "$PROJECT_DIR" ]] && [[ -d "./$PROJECT_NAME" ]]; then
+    PROJECT_DIR="$(pwd)/$PROJECT_NAME"
+fi
+
+NGINX_CONF="/etc/nginx/sites-available/${PROJECT_NAME}.conf"
+NGINX_LINK="/etc/nginx/sites-enabled/${PROJECT_NAME}.conf"
+
+USER_DOMAIN_INPUT=""
+DOMAIN=""
+EMAIL=""
+YOOKASSA_PORT=""
+
+show_header() {
+    clear
+    echo -e "${PURPLE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${PURPLE}${BOLD}           REMNAWAVE SHOPBOT INSTALLER & UPDATER              ${NC}"
+    echo -e "${PURPLE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+}
+
+show_footer() {
+    echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${CYAN}Репозиторий:${NC}  https://github.com/ponoroshca/adminka_work"
+    echo -e "${CYAN}Telegram:${NC}      https://t.me/+7hUhNxAdzBpjNWRi"
+    echo -e "${CYAN}Проект:${NC}       remnawave-shopbot"
+    echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+}
+
+log_info() {
+    echo -e "${BLUE}${BOLD}[INFO]${NC} $1"
+}
+
+log_success() {
+    echo -e "${GREEN}${BOLD}[✔]${NC} $1"
+}
+
+log_warn() {
+    echo -e "${YELLOW}${BOLD}[!]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}${BOLD}[✘] Ошибка:${NC} $1" >&2
+}
+
+log_input() {
+    echo -ne "${CYAN}${BOLD}[?]${NC} $1"
+}
+
+run_with_spinner() {
+    local message="$1"
+    shift
+    local cmd=("$@")
+
+    echo -ne "${BLUE}${BOLD}[➜]${NC} ${message}... "
+
+    local temp_log
+    temp_log=$(mktemp)
+    
+    if "${cmd[@]}" > "$temp_log" 2>&1; then
+        echo -e "${GREEN}${BOLD}OK${NC}"
+        rm -f "$temp_log"
+        return 0
+    else
+        local exit_code=$?
+        echo -e "${RED}${BOLD}FAILED${NC}"
+        echo -e "\n${RED}================ LOG OUTPUT =================${NC}"
+        cat "$temp_log"
+        echo -e "${RED}=============================================${NC}"
+        rm -f "$temp_log"
+        return $exit_code
+    fi
+}
+
+run_with_animated_spinner() {
+    local message="$1"
+    shift
+    local cmd=("$@")
+
+    echo -ne "${BLUE}${BOLD}[➜]${NC} ${message}... "
+
+    local temp_log
+    temp_log=$(mktemp)
+    
+    "${cmd[@]}" > "$temp_log" 2>&1 &
+    local pid=$!
+    
+    local delay=0.1
+    local spinstr='|/-\'
+    
+    tput civis 2>/dev/null || true
+
+    while ps -p "$pid" > /dev/null 2>&1; do
+        local temp=${spinstr#?}
+        printf "[%c]" "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b"
+    done
+
+    wait "$pid"
+    local exit_code=$?
+
+    tput cnorm 2>/dev/null || true
+    printf "   \b\b\b"
+
+    if [ $exit_code -eq 0 ]; then
+        echo -e "${GREEN}${BOLD}OK${NC}"
+        rm -f "$temp_log"
+        return 0
+    else
+        echo -e "${RED}${BOLD}FAILED${NC}"
+        echo -e "\n${RED}================ LOG OUTPUT =================${NC}"
+        cat "$temp_log"
+        echo -e "${RED}=============================================${NC}"
+        rm -f "$temp_log"
+        return $exit_code
+    fi
+}
+
+on_error() {
+    tput cnorm 2>/dev/null || true
+    echo ""
+    log_error "Скрипт прерван на строке $1."
+    exit 1
+}
+trap 'on_error $LINENO' ERR
+
+sanitize_domain() {
+    if [[ -z "${1:-}" ]]; then
+        echo ""
+        return 0
+    fi
+    echo "$1" | sed -e 's%^https\?://%%' -e 's%/.*$%%' | tr -cd 'A-Za-z0-9.-' | tr '[:upper:]' '[:lower:]'
+}
+
+get_server_ip() {
+    local ipv4_re='^([0-9]{1,3}\.){3}[0-9]{1,3}$'
+    local ip
+    for url in "https://api.ipify.org" "https://ifconfig.co/ip" "https://ipv4.icanhazip.com"; do
+        ip=$(curl -fsS --max-time 3 "$url" 2>/dev/null | tr -d '\r\n\t ') || true
+        if [[ $ip =~ $ipv4_re ]]; then
+            echo "$ip"
+            return 0
+        fi
+    done
+    ip=$(hostname -I 2>/dev/null | awk '{print $1}' || true)
+    if [[ $ip =~ $ipv4_re ]]; then echo "$ip"; fi
+}
+
+resolve_domain_ip() {
+    local domain="${1:-}"
+    [[ -z "$domain" ]] && return 1
+    
+    local ipv4_re='^([0-9]{1,3}\.){3}[0-9]{1,3}$'
+    local ip
+    
+    ip=$(getent ahostsv4 "$domain" 2>/dev/null | awk '{print $1}' | head -n1)
+    if [[ $ip =~ $ipv4_re ]]; then echo "$ip"; return 0; fi
+    
+    if command -v dig >/dev/null 2>&1; then
+        ip=$(dig +short A "$domain" 2>/dev/null | grep -E "$ipv4_re" | head -n1)
+        if [[ $ip =~ $ipv4_re ]]; then echo "$ip"; return 0; fi
+    fi
+    return 1
+}
+
+get_domain_from_nginx() {
+    if [[ -f "$NGINX_CONF" ]]; then
+        grep "server_name" "$NGINX_CONF" | awk '{print $2}' | sed 's/;//' | head -n1
+    fi
+}
+
+get_port_from_nginx() {
+    if [[ -f "$NGINX_CONF" ]]; then
+        grep "listen" "$NGINX_CONF" | head -n1 | awk '{print $2}' | sed 's/;//'
+    fi
+}
+
+ensure_sudo_refresh() {
+    if ! sudo -v; then
+        log_error "Требуются права sudo. Введите пароль выше."
+        exit 1
+    fi
+}
+
+docker_compose_available() {
+    docker compose version >/dev/null 2>&1 || command -v docker-compose >/dev/null 2>&1
+}
+
+run_docker_compose() {
+    if docker compose version >/dev/null 2>&1; then
+        docker compose "$@"
+    else
+        docker-compose "$@"
+    fi
+}
+
+ensure_docker_engine() {
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    if [[ -x "$script_dir/scripts/ensure-docker-ce.sh" ]]; then
+        log_info "Проверка Docker Engine (не Podman)..."
+        sudo bash "$script_dir/scripts/ensure-docker-ce.sh" || {
+            log_error "Не удалось настроить Docker CE. См. docs/VPS_DEPLOY_FULL_RU.md"
+            exit 1
+        }
+        return 0
+    fi
+    log_warn "scripts/ensure-docker-ce.sh не найден, пробуем базовую установку..."
+    if ! docker compose version >/dev/null 2>&1; then
+        run_with_animated_spinner "Установка docker-compose-plugin" \
+            sudo bash -c "export DEBIAN_FRONTEND=noninteractive && apt-get update -qq && apt-get install -y --no-install-recommends docker-compose-plugin" || true
+    fi
+}
+
+ensure_packages() {
+    declare -A packages=( 
+        [git]='git' 
+        [nginx]='nginx' 
+        [curl]='curl' 
+        [certbot]='certbot' 
+        [dig]='dnsutils' 
+    )
+    local missing=()
+    local missing_desc=()
+    
+    for cmd in "${!packages[@]}"; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            missing+=("${packages[$cmd]}")
+            missing_desc+=("$cmd")
+        fi
+    done
+
+    if ((${#missing[@]})); then
+        echo -e "${BLUE}${BOLD}[➜]${NC} Требуются зависимости: ${CYAN}${missing_desc[*]}${NC}"
+        run_with_animated_spinner "Установка зависимостей (${missing[*]})" \
+            sudo bash -c "export DEBIAN_FRONTEND=noninteractive && apt-get update -qq && apt-get install -y --no-install-recommends ${missing[*]}" || {
+            log_error "Не удалось установить зависимости"
+            exit 1
+        }
+    else
+        log_success "Системные зависимости в порядке"
+    fi
+
+    ensure_docker_engine
+}
+
+ensure_services() {
+    run_with_spinner "Проверка Docker" sudo systemctl enable docker || true
+    run_with_spinner "Запуск Docker" sudo systemctl start docker || true
+    run_with_spinner "Проверка Nginx" sudo systemctl enable nginx || true
+    run_with_spinner "Запуск Nginx" sudo systemctl start nginx || true
+}
+
+ensure_certbot_nginx() {
+    if command -v certbot >/dev/null 2>&1 && certbot plugins 2>/dev/null | grep -qi 'nginx'; then
+        log_success "Плагин Certbot Nginx активен"
+        return 0
+    fi
+
+    log_info "Установка плагина Certbot для Nginx..."
+    
+    run_with_animated_spinner "Установка python3-certbot-nginx" \
+        sudo bash -c "export DEBIAN_FRONTEND=noninteractive && apt-get update -qq && apt-get install -y --no-install-recommends python3-certbot-nginx" || {
+        log_warn "Попытка установки через snap..."
+        
+        if ! command -v snap >/dev/null 2>&1; then
+            run_with_animated_spinner "Установка snapd" \
+                sudo bash -c "export DEBIAN_FRONTEND=noninteractive && apt-get update -qq && apt-get install -y --no-install-recommends snapd" || {
+                log_error "Не удалось установить snapd"
+                exit 1
+            }
+        fi
+        
+        run_with_animated_spinner "Установка Certbot через snap" \
+            sudo bash -c "snap install core 2>/dev/null; snap refresh core 2>/dev/null; snap install --classic certbot 2>/dev/null; ln -sf /snap/bin/certbot /usr/bin/certbot" || {
+            log_error "Не удалось установить Certbot"
+            exit 1
+        }
+    }
+    
+    if certbot plugins 2>/dev/null | grep -qi 'nginx'; then
+        log_success "Плагин Certbot Nginx успешно настроен"
+    else
+        log_error "Не удалось установить плагин Nginx для Certbot"
+        exit 1
+    fi
+}
+
+configure_nginx() {
+    local domain="$1"
+    local port="$2"
+    
+    log_info "Конфигурация Nginx для $domain:$port"
+    
+    sudo tee "$NGINX_CONF" >/dev/null <<EOF
+server {
+    listen ${port} ssl http2;
+    listen [::]:${port} ssl http2;
+    server_name ${domain};
+    client_max_body_size 500M;
+
+    ssl_certificate /etc/letsencrypt/live/${domain}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${domain}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:1488;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+EOF
+    
+    if [[ ! -L "$NGINX_LINK" ]]; then
+        sudo ln -s "$NGINX_CONF" "$NGINX_LINK" 2>/dev/null || true
+    fi
+
+    run_with_spinner "Проверка конфигурации Nginx" sudo nginx -t || {
+        log_error "Некорректная конфигурация Nginx"
+        exit 1
+    }
+    
+    run_with_spinner "Перезагрузка Nginx" sudo systemctl reload nginx || {
+        log_error "Не удалось перезагрузить Nginx"
+        exit 1
+    }
+}
+
+show_docker_images() {
+    if command -v docker >/dev/null 2>&1 && [[ -f "docker-compose.yml" ]]; then
+        echo -e "${BLUE}${BOLD}[INFO]${NC} Docker контейнеры в проекте:"
+        run_docker_compose config --services 2>/dev/null | sed 's/^/  - /' || true
+    fi
+}
+
+show_header
+ensure_sudo_refresh
+
+if [[ -f "$NGINX_CONF" ]]; then
+    
+    # 1. Проверяем, существует ли папка по ожидаемому пути
+    if [[ ! -d "$PROJECT_DIR" ]]; then
+        log_warn "Конфигурация Nginx найдена, но папка с ботом отсутствует по пути: $PROJECT_DIR"
+        
+        # 2. Попытка автоматического восстановления (клон)
+        log_info "Запуск автоматического восстановления файлов..."
+        ensure_packages
+        
+        run_with_animated_spinner "Восстановление репозитория" git clone "$REPO_URL" "$PROJECT_DIR" || {
+            log_error "Критическая ошибка: не удалось клонировать репозиторий в $PROJECT_DIR."
+            exit 1
+        }
+    fi
+    
+    # 3. Теперь папка должна существовать
+    if [[ -d "$PROJECT_DIR" ]]; then
+        log_info "Режим обновления активен. Путь: $PROJECT_DIR"
+        
+        cd "$PROJECT_DIR"
+        
+        DOMAIN=$(get_domain_from_nginx)
+        YOOKASSA_PORT=$(get_port_from_nginx)
+        
+        if [[ -z "$DOMAIN" ]]; then
+            log_error "Не удалось прочитать домен из конфигурации Nginx. Возможно, файл поврежден."
+            exit 1
+        fi
+        
+        run_with_animated_spinner "Обновление файлов (Hard Reset)" \
+            bash -c "git fetch origin main && git reset --hard origin/main" || {
+            log_error "Не удалось обновить репозиторий"
+            exit 1
+        }
+        
+        echo ""
+        show_docker_images
+        echo ""
+        
+        ensure_services
+        
+        run_with_animated_spinner "Пересборка контейнеров" \
+            sudo bash -c "cd '$PROJECT_DIR' && docker network create remnawave-network 2>/dev/null || true && docker compose down --remove-orphans && docker compose up -d --build" || {
+            log_error "Не удалось пересобрать контейнеры"
+            exit 1
+        }
+        
+        echo ""
+        echo -e "${GREEN}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
+        echo -e "${GREEN}┃           ОБНОВЛЕНИЕ / ВОССТАНОВЛЕНИЕ ЗАВЕРШЕНО!             ┃${NC}"
+        echo -e "${GREEN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
+        echo ""
+        echo -e " ${BOLD}Адрес панели:${NC}     https://${DOMAIN}:${YOOKASSA_PORT}/login"
+        echo -e " ${BOLD}Данные входа:${NC}     ${CYAN}admin${NC} / ${CYAN}admin${NC}"
+        echo -e " ${BOLD}Webhook URL:${NC}      https://${DOMAIN}:${YOOKASSA_PORT}/yookassa-webhook"
+        echo ""
+        show_footer
+        exit 0
+    fi
+fi
+
+log_info "Инициализация процесса чистой установки..."
+echo ""
+
+ensure_packages
+ensure_services
+ensure_certbot_nginx
+
+if [[ ! -d "$PROJECT_DIR/.git" ]]; then
+    if run_with_animated_spinner "Клонирование репозитория (SSH)" git clone "$REPO_URL" "$PROJECT_DIR"; then
+        :
+    elif run_with_animated_spinner "Клонирование репозитория (HTTPS)" git clone "$REPO_URL_HTTPS" "$PROJECT_DIR"; then
+        log_warn "Клон по HTTPS. Для приватного репо нужен SSH-ключ — см. docs/VPS_DEPLOY_FULL_RU.md"
+    else
+        log_error "Не удалось клонировать репозиторий. Добавьте SSH-ключ на GitHub."
+        exit 1
+    fi
+else
+    log_warn "Каталог проекта уже существует ($PROJECT_DIR), пропускаем клонирование"
+fi
+cd "$PROJECT_DIR"
+
+echo ""
+
+DOMAIN=""
+while [[ -z "$DOMAIN" ]]; do
+    log_input "Введите ваш домен (без http/s): "
+    read -r USER_DOMAIN_INPUT < /dev/tty || true
+    
+    if [[ -z "$USER_DOMAIN_INPUT" ]]; then
+        log_warn "Домен не может быть пустым."
+        continue
+    fi
+    
+    DOMAIN=$(sanitize_domain "$USER_DOMAIN_INPUT")
+    if [[ -z "$DOMAIN" ]]; then
+        log_warn "Домен содержит недопустимые символы."
+        DOMAIN=""
+    fi
+done
+
+EMAIL=""
+while [[ -z "$EMAIL" ]]; do
+    log_input "Введите Email для SSL (Let's Encrypt): "
+    read -r EMAIL < /dev/tty || true
+    
+    if [[ -z "$EMAIL" ]]; then
+        log_warn "Email не может быть пустым."
+    fi
+done
+
+echo ""
+
+SERVER_IP=$(get_server_ip || true)
+DOMAIN_IP=$(resolve_domain_ip "$DOMAIN" || true)
+
+if [[ -n "$SERVER_IP" ]]; then
+    log_success "IP сервера: $SERVER_IP"
+fi
+
+if [[ -n "$DOMAIN_IP" ]]; then
+    log_success "IP домена: $DOMAIN_IP"
+fi
+
+if [[ -n "$SERVER_IP" ]] && [[ -n "$DOMAIN_IP" ]] && [[ "$SERVER_IP" != "$DOMAIN_IP" ]]; then
+    log_warn "Внимание: IP сервера ($SERVER_IP) отличается от IP домена ($DOMAIN_IP)."
+    log_warn "Это может привести к ошибке выдачи SSL сертификата."
+    
+    REPLY=""
+    while true; do
+        log_input "Продолжить всё равно? (y/n): "
+        read -r -n1 REPLY < /dev/tty || true
+        echo ""
+        case "$REPLY" in
+            [yY]) break ;;
+            [nN]) log_error "Установка отменена."; exit 1 ;;
+            *) ;;
+        esac
+    done
+fi
+
+echo ""
+
+if command -v ufw >/dev/null 2>&1 && sudo ufw status 2>/dev/null | grep -q 'Status: active'; then
+    run_with_spinner "Открытие портов UFW (80, 443, 1488, 8443)" \
+        sudo bash -c "ufw allow 80/tcp && ufw allow 443/tcp && ufw allow 1488/tcp && ufw allow 8443/tcp" || {
+        log_warn "Не удалось настроить UFW"
+    }
+fi
+
+echo ""
+
+if [[ -d "/etc/letsencrypt/live/${DOMAIN}" ]]; then
+    log_success "SSL сертификаты уже существуют для $DOMAIN"
+else
+    log_info "Выпуск SSL сертификата от Let's Encrypt для $DOMAIN..."
+    
+    run_with_animated_spinner "Получение сертификата (может занять время)" \
+        sudo bash -c "certbot --nginx -d $DOMAIN --email $EMAIL --agree-tos --non-interactive --redirect --no-eff-email 2>&1" || {
+        log_error "Не удалось получить SSL сертификат. Проверьте:"
+        log_error "  - Домен правильно указан"
+        log_error "  - Домен указывает на этот сервер ($SERVER_IP)"
+        log_error "  - Порты 80 и 443 открыты"
+        log_error "  - Email правильный"
+        exit 1
+    }
+fi
+
+echo ""
+log_input "Порт для вебхуков YooKassa [443/8443] (default: 8443): "
+read -r YOOKASSA_PORT_INPUT < /dev/tty || true
+YOOKASSA_PORT="${YOOKASSA_PORT_INPUT:-8443}"
+
+if [[ "$YOOKASSA_PORT" != "443" && "$YOOKASSA_PORT" != "8443" ]]; then
+    log_warn "Неподдерживаемый порт, используется 8443"
+    YOOKASSA_PORT=8443
+fi
+
+echo ""
+configure_nginx "$DOMAIN" "$YOOKASSA_PORT"
+
+echo ""
+show_docker_images
+echo ""
+
+# Стабильный SHOPBOT_SECRET_KEY в .env (иначе сессии/CSRF админки ломаются при рестарте)
+sudo bash -c "cd '$PROJECT_DIR' && if ! grep -qs '^SHOPBOT_SECRET_KEY=.' .env; then echo SHOPBOT_SECRET_KEY=\$(python3 -c 'import secrets;print(secrets.token_hex(32))') >> .env; fi" || true
+
+run_with_animated_spinner "Сборка и запуск Docker контейнеров" \
+    sudo bash -c "cd '$PROJECT_DIR' && docker network create remnawave-network 2>/dev/null || true && if docker compose ps -q 2>/dev/null | grep -q .; then docker compose down --remove-orphans; fi && docker compose up -d --build" || {
+    log_error "Не удалось запустить Docker контейнеры"
+    exit 1
+}
+
+echo ""
+echo -e "${GREEN}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
+echo -e "${GREEN}┃                  УСТАНОВКА ЗАВЕРШЕНА!                        ┃${NC}"
+echo -e "${GREEN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
+echo ""
+echo -e " ${BOLD}Адрес панели:${NC}     https://${DOMAIN}:${YOOKASSA_PORT}/login"
+echo -e " ${BOLD}Данные входа:${NC}     ${CYAN}admin${NC} / ${CYAN}admin${NC}"
+echo -e " ${BOLD}Webhook URL:${NC}      https://${DOMAIN}:${YOOKASSA_PORT}/yookassa-webhook"
+echo ""
+echo -e " ${BOLD}SSL Сертификаты:${NC}"
+echo -e "   Публичный:  ${YELLOW}/etc/letsencrypt/live/${DOMAIN}/fullchain.pem${NC}"
+echo -e "   Приватный:  ${YELLOW}/etc/letsencrypt/live/${DOMAIN}/privkey.pem${NC}"
+echo ""
+echo -e "${YELLOW} ⚠  Пожалуйста, смените пароль сразу после входа!${NC}"
+echo ""
+show_footer

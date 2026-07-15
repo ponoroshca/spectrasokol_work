@@ -1,0 +1,9 @@
+{
+    "_comment": "Конфигурация проекта. Автопроверка обновлений отключена (см. update.py).",
+    "project": {
+        "version": "1.0.0",
+        "name": "Shopbot Admin",
+        "links": { "repository": "", "releases": "", "telegram": "", "developer": "", "update": "" },
+        "author": ""
+    }
+}

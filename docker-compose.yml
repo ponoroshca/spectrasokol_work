@@ -1,0 +1,27 @@
+services:
+  remnawave-shopbot:
+    build: .
+    restart: unless-stopped
+    ports:
+      # Привязка только к localhost — наружу проксирует nginx (443). Не выставлять 0.0.0.0!
+      - '127.0.0.1:1488:1488'
+      - '127.0.0.1:8000:8000'
+    volumes:
+      - .:/app/project
+    container_name: remnawave-shopbot
+    environment:
+      # Стабильный ключ сессий/CSRF (из .env рядом с compose, вне git).
+      # Без него Flask генерит случайный SECRET_KEY при каждом старте → ломает сессии ("CSRF session token is missing").
+      - SHOPBOT_SECRET_KEY=${SHOPBOT_SECRET_KEY:-}
+    extra_hosts:
+      # РФ-хостер: api.telegram.org резолвится в IPv6 (нет маршрута) → unreachable.
+      # Пин на рабочий IPv4 Telegram DC, иначе бот не достучится до Telegram.
+      - "api.telegram.org:149.154.167.220"
+    networks:
+      - default
+      - remnawave-network
+
+networks:
+  remnawave-network:
+    external: true
+    name: remnawave-network
