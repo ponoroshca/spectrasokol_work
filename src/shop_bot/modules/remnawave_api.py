@@ -481,7 +481,7 @@ async def ensure_user(
     email = _normalize_email_for_remnawave(email, telegram_id=telegram_id)
     current = await get_user_by_email(email, host_name=host_name)
     if not current:
-        # Мигрированные из alma-vpn-bot юзеры заведены в панели БЕЗ email (только username),
+        # Мигрированные из spectra-vpn-bot юзеры заведены в панели БЕЗ email (только username),
         # поэтому поиск по email их не находит -> ensure_user делал POST -> 409 "username already exists"
         # -> продление падало, а деньги уходили на баланс. Фолбэк: ищем по username (= локальная часть email).
         _uname = _normalize_username_for_remnawave(username or (email.split("@")[0] if email else ""))

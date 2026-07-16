@@ -355,7 +355,7 @@ def _process_template_placeholders(html: str, user_id: int, webapp_settings: dic
         "{{ support_bot_cta_title }}": _cfg("support.bot_cta_title", "Чат с поддержкой в Telegram"),
         "{{ support_bot_cta_subtitle }}": _cfg(
             "support.bot_cta_subtitle",
-            "Тикеты ведутся в @VPN_Alma_Support_bot — быстрее и удобнее, чем в мини-приложении.",
+            "Тикеты ведутся в @SpectraSokol_Support_bot — быстрее и удобнее, чем в мини-приложении.",
         ),
         "{{ support_bot_open_button_text }}": _cfg("support.bot_open_button_text", "Открыть чат поддержки"),
         "{{ min_price }}": context_data.get("min_price", "0 ₽"),
@@ -376,6 +376,8 @@ def _process_template_placeholders(html: str, user_id: int, webapp_settings: dic
         "{{ purchase_title }}": _cfg("purchase.title", "Покупка подписки"),
         "{{ purchase_subtitle }}": _cfg("purchase.subtitle", "Подключайте больше устройств и пользуйтесь сервисом вместе с друзьями и близкими"),
         "{{ purchase_pay_button_text }}": _cfg("purchase.pay_button_text", "Оплатить подписку"),
+        "{{ terms_url }}": (get_setting("terms_url") or "https://teletype.in/@spectrasokol/7KqBCZUPDAX"),
+        "{{ privacy_url }}": (get_setting("privacy_url") or "https://teletype.in/@spectrasokol/S-GEwiM8CIE"),
         "{{ purchase_server_label_text }}": _cfg("purchase.server_label_text", "Локация сервера"),
         "{{ purchase_server_placeholder_text }}": _cfg("purchase.server_placeholder_text", "Выберите сервер"),
         "{{ purchase_devices_label_text }}": _cfg("purchase.devices_label_text", "Устройств"),
@@ -632,8 +634,8 @@ def _process_key_data(key: dict) -> dict:
 
     if days_left > 5:
         status_text = "Активен"
-        status_color = "text-cyan-500"
-        status_bg = "bg-cyan-500/10"
+        status_color = "text-purple-500"
+        status_bg = "bg-purple-500/10"
     elif days_left > 0:
         status_text = "Скоро"
         status_color = "text-yellow-500"
@@ -775,11 +777,11 @@ def _render_home_hero(key: dict | None = None, webapp_config: dict | None = None
         is_expired = data["days_left"] <= 0
         date_display = _format_expire_date_ru(data.get("expiry_dt"), webapp_config)
         shield_class = "home-shield-wrap" + (" is-expired" if is_expired else "")
-        grad_id = "almaShieldGradExpired" if is_expired else "almaShieldGrad"
+        grad_id = "spectraShieldGradExpired" if is_expired else "spectraShieldGrad"
     else:
         date_display = _cfg_text(webapp_config, "home.status_no_subscription", "нет подписки")
         shield_class = "home-shield-wrap is-empty"
-        grad_id = "almaShieldGradEmpty"
+        grad_id = "spectraShieldGradEmpty"
 
     status_line = _cfg_text(
         webapp_config,
@@ -813,8 +815,8 @@ def _render_home_hero(key: dict | None = None, webapp_config: dict | None = None
         <div class="home-hero-visual" data-ring-num="{ring_num}" data-ring-unit="{ring_unit}" data-ring-state="{ring_state}">
             <div class="home-rings" aria-hidden="true"></div>
             <div class="home-hero-logo" style="position:relative;z-index:2;display:flex;align-items:center;justify-content:center;">
-                <img src="/module/ico/Alma-VPN-icon.png" alt="Alma VPN"
-                    style="width:108px;height:108px;border-radius:24px;object-fit:cover;display:block;filter:drop-shadow(0 0 20px rgba(110,222,252,0.30)) drop-shadow(0 10px 26px rgba(0,0,0,0.55));" />
+                <img src="/module/ico/SpectraSokol-VPN-icon.png" alt="SpectraSokol"
+                    style="width:108px;height:108px;border-radius:24px;object-fit:cover;display:block;filter:drop-shadow(0 0 20px rgba(192, 132, 252,0.30)) drop-shadow(0 10px 26px rgba(0,0,0,0.55));" />
             </div>
         </div>
         <div class="home-status-row">
@@ -932,19 +934,19 @@ def _build_trial_plan_card_html(webapp_config: dict | None = None) -> str:
     duration_hint = f"{days} {days_word} бесплатно"
     return f"""
             <button type="button"
-                class="plan-btn trial-plan-card alma-plan-card glass-card border-2 border-cyan-400/50 rounded-[22px] p-3 flex flex-col text-left transition-all active:scale-[0.98] hover:border-cyan-300/60 group relative overflow-hidden col-span-2"
+                class="plan-btn trial-plan-card spectra-plan-card glass-card border-2 border-purple-400/50 rounded-[22px] p-3 flex flex-col text-left transition-all active:scale-[0.98] hover:border-purple-300/60 group relative overflow-hidden col-span-2"
                 data-is-trial="1"
                 onclick="claimTrial(this)">
-                <div class="absolute inset-0 bg-cyan-500/10 plan-card-glow"></div>
+                <div class="absolute inset-0 bg-purple-500/10 plan-card-glow"></div>
                 <div class="relative z-10 flex items-start justify-between gap-1.5 w-full min-h-[22px]">
-                    <div class="plan-label text-[15px] font-extrabold text-cyan-50 leading-tight min-w-0 flex-1 pr-1">{title}</div>
+                    <div class="plan-label text-[15px] font-extrabold text-purple-50 leading-tight min-w-0 flex-1 pr-1">{title}</div>
                     <span class="trial-plan-badge">ТЕСТ · FREE</span>
                 </div>
                 <div class="relative z-10 mt-2 flex items-end gap-0.5">
-                    <span class="plan-price text-[22px] font-black text-cyan-300 leading-none">0</span>
-                    <span class="text-[14px] font-semibold text-cyan-200/90 leading-none">₽</span>
+                    <span class="plan-price text-[22px] font-black text-purple-300 leading-none">0</span>
+                    <span class="text-[14px] font-semibold text-purple-200/90 leading-none">₽</span>
                 </div>
-                <div class="relative z-10 mt-1 text-[11px] font-medium text-cyan-200/80">{subtitle} · {duration_hint}</div>
+                <div class="relative z-10 mt-1 text-[11px] font-medium text-purple-200/80">{subtitle} · {duration_hint}</div>
             </button>
     """
 
@@ -1001,10 +1003,10 @@ def _get_profile_install_section_html(sub_url: str = "", webapp_config: dict | N
     <div class="profile-install-section">
         <div class="feature-card profile-install-hero p-4 sm:p-5">
             <div class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-3">
-                <span class="material-icons-round text-cyan-200 text-xl">settings</span>
+                <span class="material-icons-round text-purple-200 text-xl">settings</span>
             </div>
             <h2 class="text-[22px] sm:text-[26px] leading-tight font-black text-white tracking-tight">{hero_title}</h2>
-            <p class="mt-1.5 text-[12px] sm:text-[13px] text-cyan-100/75 leading-snug">{hero_subtitle}</p>
+            <p class="mt-1.5 text-[12px] sm:text-[13px] text-purple-100/75 leading-snug">{hero_subtitle}</p>
         </div>
         <div class="profile-platform-grid">{platform_cards}</div>
         <div class="profile-sub-link-bar{copy_disabled}">
@@ -1177,7 +1179,7 @@ def _get_profile_card_html(
                             <span class="material-icons-round text-[14px] text-gray-500 shrink-0">content_copy</span>
                         </button>
                         <button type="button" data-ref-link="{referral_link}" data-share-text="{ref_share_text}" onclick="shareReferralLink(this)"
-                            class="shrink-0 h-full px-3 py-2 bg-cyan-500/15 border border-cyan-500/40 rounded-xl flex items-center justify-center text-cyan-200 hover:bg-cyan-500/25 active:scale-[0.97] transition-all">
+                            class="shrink-0 h-full px-3 py-2 bg-purple-500/15 border border-purple-500/40 rounded-xl flex items-center justify-center text-purple-200 hover:bg-purple-500/25 active:scale-[0.97] transition-all">
                             <span class="material-icons-round text-[18px]">send</span>
                         </button>
                     </div>
@@ -1261,7 +1263,7 @@ def _get_profile_card_html(
                     <div class="grid grid-cols-3 gap-1.5">
                         <div
                             class="bg-white/5 border border-white/5 rounded-xl p-2 flex flex-col items-center justify-center text-center transition-all hover:bg-white/[0.08]">
-                            <span class="material-icons-round text-cyan-400 text-[13px] mb-0.5 opacity-80">group</span>
+                            <span class="material-icons-round text-purple-400 text-[13px] mb-0.5 opacity-80">group</span>
                             <div class="text-[8px] text-gray-400 uppercase font-black tracking-tight leading-none mb-0.5">{lbl_referrals}</div>
                             <div class="text-[10px] font-black text-white">{referral_count} {lbl_referrals_unit}</div>
                         </div>
@@ -1325,12 +1327,12 @@ def _get_profile_referral_block_html(user: dict | None, webapp_config: dict | No
                         <span class="material-icons-round text-[14px] text-gray-500 shrink-0">content_copy</span>
                     </button>
                     <button type="button" data-ref-link="{referral_link}" data-share-text="{ref_share_text}" onclick="shareReferralLink(this)"
-                        class="shrink-0 h-full px-3 py-2 bg-cyan-500/15 border border-cyan-500/40 rounded-xl flex items-center justify-center text-cyan-200 hover:bg-cyan-500/25 active:scale-[0.97] transition-all">
+                        class="shrink-0 h-full px-3 py-2 bg-purple-500/15 border border-purple-500/40 rounded-xl flex items-center justify-center text-purple-200 hover:bg-purple-500/25 active:scale-[0.97] transition-all">
                         <span class="material-icons-round text-[18px]">send</span>
                     </button>
                 </div>
-                <div class="bg-cyan-500/5 border border-cyan-500/15 rounded-xl p-3">
-                    <div class="text-[11px] font-black text-cyan-300 mb-1.5 text-center">🤝 Пригласи друга — выгодно обоим</div>
+                <div class="bg-purple-500/5 border border-purple-500/15 rounded-xl p-3">
+                    <div class="text-[11px] font-black text-purple-300 mb-1.5 text-center">🤝 Пригласи друга — выгодно обоим</div>
                     <div class="flex items-start gap-2 text-[10px] text-gray-200 leading-snug mb-1">
                         <span class="shrink-0">🎁</span><div><b>Ты получаешь:</b> {_ref_you}</div>
                     </div>
@@ -1614,7 +1616,7 @@ def _get_renew_keys_html(keys: list, user_id: int | None = None, webapp_config: 
                     <div class="flex items-center gap-2">
                         <div class="text-[9px] text-gray-400">До {data['expire_date_str']}</div>
                         <span class="text-[8px] {data['status_bg']} {data['status_color']} px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0">{data['status_text']}</span>
-                        {f'<span class="text-[8px] text-cyan-300/80 whitespace-nowrap shrink-0" title="Подключено устройств">📱 {data.get("hwid_usage", 0)}</span>' if data.get("hwid_usage", 0) else ''}
+                        {f'<span class="text-[8px] text-purple-300/80 whitespace-nowrap shrink-0" title="Подключено устройств">📱 {data.get("hwid_usage", 0)}</span>' if data.get("hwid_usage", 0) else ''}
                     </div>
                 </div>
             </div>
@@ -1740,7 +1742,7 @@ def _build_plans_grid_html(host_name: str, user_id: int | None, container_id: st
 
             html += f"""
             <button
-                class="plan-btn alma-plan-card glass-card border border-white/10 rounded-[22px] p-3 flex flex-col text-left transition-all active:scale-[0.98] hover:border-primary/40 group relative overflow-hidden{span_class}{selected_cls}"
+                class="plan-btn spectra-plan-card glass-card border border-white/10 rounded-[22px] p-3 flex flex-col text-left transition-all active:scale-[0.98] hover:border-primary/40 group relative overflow-hidden{span_class}{selected_cls}"
                 data-host="{host_name}" data-plan-id="{plan['plan_id']}" data-price="{final_price}" data-plan-name="{plan.get('plan_name', '')}"
                 data-featured="{'1' if is_featured else '0'}"
                 data-months="{months}" data-month-factor="{month_factor}"
@@ -1755,7 +1757,7 @@ def _build_plans_grid_html(host_name: str, user_id: int | None, container_id: st
                     <span class="plan-price text-[22px] font-black text-white leading-none">{final_price}</span>
                     <span class="text-[14px] font-semibold text-gray-200 leading-none">₽</span>
                 </div>
-                <div class="plan-monthly-price relative z-10 mt-1 text-[11px] font-medium text-cyan-200/70">{month_price} ₽ {monthly_label}</div>
+                <div class="plan-monthly-price relative z-10 mt-1 text-[11px] font-medium text-purple-200/70">{month_price} ₽ {monthly_label}</div>
             </button>
             """
     html += '</div>'
@@ -1829,7 +1831,7 @@ def _render_banned_page(webapp_settings: dict):
             theme: {{
                 extend: {{
                     colors: {{
-                        primary: '#1fc6d8',
+                        primary: '#a855f7',
                         surface: {{
                             dark: '#121212',
                             card: '#1e1e1e',
@@ -1852,7 +1854,7 @@ def _render_banned_page(webapp_settings: dict):
     </div>
 
     <div class="relative z-10 flex flex-col items-center text-center max-w-sm w-full">
-        {f'<img src="{logo}" class="h-20 mb-8 drop-shadow-[0_0_20px_rgba(31,198,224,0.3)]">' if logo else f'<div class="w-20 h-20 bg-primary/20 rounded-3xl flex items-center justify-center mb-8 border border-primary/30 shadow-[0_0_30px_rgba(31,198,224,0.2)]"><span class="material-icons-round text-primary text-4xl">block</span></div>'}
+        {f'<img src="{logo}" class="h-20 mb-8 drop-shadow-[0_0_20px_rgba(168,85,247,0.3)]">' if logo else f'<div class="w-20 h-20 bg-primary/20 rounded-3xl flex items-center justify-center mb-8 border border-primary/30 shadow-[0_0_30px_rgba(168,85,247,0.2)]"><span class="material-icons-round text-primary text-4xl">block</span></div>'}
         
         <h1 class="text-3xl font-black mb-3 tracking-tight">Доступ ограничен</h1>
         <p class="text-gray-400 font-medium leading-relaxed mb-8">
@@ -2211,7 +2213,7 @@ async def index(request: Request, user_id: int | None = None, token: str | None 
 
 @app.get("/manifest.webmanifest")
 async def pwa_manifest():
-    """PWA-манифест: делает app.almapluse.ru устанавливаемым как standalone-приложение."""
+    """PWA-манифест: делает vpn-vless.ru устанавливаемым как standalone-приложение."""
     p = os.path.join(os.path.dirname(__file__), "manifest.webmanifest")
     try:
         with open(p, "r", encoding="utf-8") as f:
@@ -2589,7 +2591,7 @@ _RECOVERY_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 def _gen_recovery_code() -> str:
     import secrets
     raw = "".join(secrets.choice(_RECOVERY_ALPHABET) for _ in range(10))
-    return f"ALMA-{raw[:5]}-{raw[5:]}"
+    return f"SPECTRA-{raw[:5]}-{raw[5:]}"
 
 def _normalize_recovery_code(code: str) -> str:
     """Убирает дефисы/пробелы и приводит к верхнему регистру для устойчивого сравнения."""
@@ -3559,7 +3561,7 @@ async def api_delete_key(req: DeleteKeyRequest, request: Request):
         refund = _compute_delete_refund(req.user_id, key)
 
         uuid = key.get('remnawave_user_uuid')
-        host = key.get('host_name') or 'Alma'
+        host = key.get('host_name') or 'SpectraSokol'
         if uuid:
             try:
                 await remnawave_api.delete_user_on_host(host, uuid)
@@ -3923,7 +3925,7 @@ async def api_key_connection_status(user_id: int, request: Request):
 
         async def _check(k):
             uuid = str(k.get("remnawave_user_uuid"))
-            host = k.get("host_name") or "Alma"
+            host = k.get("host_name") or "SpectraSokol"
             try:
                 devs = await remnawave_api.get_user_devices(uuid, host_name=host)
                 acc["devices"] += len(devs or [])

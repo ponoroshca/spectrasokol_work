@@ -565,6 +565,11 @@ def _build_welcome_inline_keyboard(
         else:
             builder.button(text="🎥 Все видео инструкции", url=channel_url)
 
+        sup = btns.get("support")
+        sup_url = (sup.get("url") if sup else None) or support_url
+        if sup_url:
+            builder.button(text=(sup.get("text") if sup else None) or "🆘 Поддержка", url=sup_url)
+
         if is_admin(user_id):
             adm = btns.get("admin")
             if adm and adm.get("callback_data"):
@@ -592,7 +597,7 @@ async def show_main_menu(message: types.Message, edit_message: bool = False):
     _trial_enabled = str(get_setting("trial_enabled") or "true").strip().lower() not in ("false", "0", "no", "off")
     trial_available, is_admin_flag = (_trial_enabled and not (user_db_data and user_db_data.get('trial_used'))), is_admin(user_id)
     text = get_setting("main_menu_text") or (
-        "🟢 <b>Alma VPN</b>\n\n"
+        "🟢 <b>SpectraSokol</b>\n\n"
         "Покупка, ключи, профиль и поддержка — всё в приложении.\n"
         "Нажмите «📲 Открыть приложение» ниже."
     )
@@ -728,10 +733,10 @@ async def _send_welcome_funnel(message: types.Message, user_id: int) -> None:
         return
     _last_welcome_sent_at[user_id] = now
 
-    channel_url = get_setting("channel_url") or "https://t.me/Info_Alma"
+    channel_url = get_setting("channel_url") or "https://t.me/SpectraSokol"
     support_username = (get_setting("support_bot_username") or "").strip().lstrip("@")
     support_url = f"https://t.me/{support_username}" if support_username else channel_url
-    brand = get_setting("panel_brand_title") or "Alma VPN"
+    brand = get_setting("panel_brand_title") or "SpectraSokol"
     try:
         trial_days = int(get_setting("trial_duration_days") or 0) or 1
     except (TypeError, ValueError):
@@ -2014,8 +2019,8 @@ def get_user_router() -> Router:
     @registration_required
     async def gift_bonus_handler(callback: types.CallbackQuery):
         await callback.answer()
-        channel = (get_setting("gift_channel_username") or "Info_Alma").strip().lstrip("@")
-        support = (get_setting("support_bot_username") or "VPN_Alma_Support_bot").strip().lstrip("@")
+        channel = (get_setting("gift_channel_username") or "SpectraSokol").strip().lstrip("@")
+        support = (get_setting("support_bot_username") or "SpectraSokol_Support_bot").strip().lstrip("@")
         amount = (get_setting("gift_bonus_amount") or "50").strip()
         default_text = (
             f"🎁 <b>Подарок {amount} ₽</b>\n\n"
@@ -3588,9 +3593,16 @@ def get_user_router() -> Router:
 # Отправляет детальный отчет о совершенной транзакции в админ-чат
 async def notify_admin_of_purchase(bot: Bot, metadata: dict):
     try:
-        aid = get_setting("admin_telegram_id")
-        if not aid: return
-        
+        try:
+            from shop_bot.data_manager.remnawave_repository import get_admin_ids
+            admin_ids = sorted(get_admin_ids() or [])
+        except Exception:
+            admin_ids = []
+        if not admin_ids:
+            aid = get_setting("admin_telegram_id")
+            if not aid: return
+            admin_ids = [int(aid)]
+
         if not notif_enabled("admin_sale_alert"): return
 
         user_id, host, months, price, action = metadata.get('user_id'), metadata.get('host_name'), metadata.get('months'), metadata.get('price'), metadata.get('action')
@@ -3601,6 +3613,15 @@ async def notify_admin_of_purchase(bot: Bot, metadata: dict):
 
         method = {'Balance': 'Баланс', 'Card': 'Карта', 'Crypto': 'Крипто', 'USDT': 'USDT', 'TON': 'TON'}.get(metadata.get('payment_method'), metadata.get('payment_method') or 'N/A')
         plan = get_plan_by_id(metadata.get('plan_id')); plan_name = plan.get('plan_name', 'N/A') if plan else 'N/A'
+        # Сетка тарифов — базовые планы (2 устр), реальное число устройств живёт в tier_device_count
+        _tier_dc = metadata.get('tier_device_count')
+        if plan_name and _tier_dc:
+            try:
+                _dc = int(_tier_dc)
+                if _dc > 0:
+                    plan_name = re.sub(r'^\d+\s*устр', f'{_dc} устр', plan_name)
+            except (TypeError, ValueError):
+                pass
         
         from shop_bot.data_manager.database import get_today_income_by_currency
         today = get_today_income_by_currency()
@@ -3625,7 +3646,11 @@ async def notify_admin_of_purchase(bot: Bot, metadata: dict):
             if metadata.get('promo_usage_per_user_limit'): stats.append(f"На юзера: {metadata.get('promo_usage_per_user_used') or 0}/{metadata.get('promo_usage_per_user_limit')}")
             if stats: txt += "\n📊 " + " | ".join(stats)
 
-        await bot.send_message(int(aid), txt, parse_mode="HTML")
+        for _aid in admin_ids:
+            try:
+                await bot.send_message(int(_aid), txt, parse_mode="HTML")
+            except Exception as e:
+                logger.warning(f"Ошибка уведомления админа {_aid}: {e}")
     except Exception as e: logger.warning(f"Ошибка уведомления админа: {e}")
 # ===== Конец функции notify_admin_of_purchase =====
 

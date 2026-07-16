@@ -1,7 +1,7 @@
 {
-  "name": "Alma VPN",
-  "short_name": "Alma VPN",
-  "description": "Личный кабинет Alma VPN — подписка, ключи, устройства.",
+  "name": "SpectraSokol",
+  "short_name": "SpectraSokol",
+  "description": "Личный кабинет SpectraSokol — подписка, ключи, устройства.",
   "lang": "ru",
   "dir": "ltr",
   "start_url": "/",
@@ -9,8 +9,8 @@
   "id": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#080b12",
-  "theme_color": "#080b12",
+  "background_color": "#0a0716",
+  "theme_color": "#0a0716",
   "icons": [
     {
       "src": "/module/ico/pwa-icon-192.png",

@@ -537,7 +537,7 @@ def initialize_db():
                 "backup_interval_hours": "1",
 
                 # FAQ поддержки (видео-инструкции). Редактируется в админке. Список [{title,url}].
-                "support_faq_json": '[{"title":"Купить подписку","url":"https://t.me/Info_Alma/84"},{"title":"Продлить подписку","url":"https://t.me/Info_Alma/86"},{"title":"Пробный период","url":"https://t.me/Info_Alma/88"},{"title":"Тарифы","url":"https://t.me/Info_Alma/90"},{"title":"Найти ключи","url":"https://t.me/Info_Alma/92"},{"title":"Ключ на устройство","url":"https://t.me/Info_Alma/94"},{"title":"Промокод","url":"https://t.me/Info_Alma/96"},{"title":"Рефералка","url":"https://t.me/Info_Alma/98"},{"title":"Название ключа","url":"https://t.me/Info_Alma/100"},{"title":"Срок ключей","url":"https://t.me/Info_Alma/102"},{"title":"Рос. приложения","url":"https://t.me/Info_Alma/104"},{"title":"Сменить устройство","url":"https://t.me/Info_Alma/106"}]',
+                "support_faq_json": '[]',
                 "support_faq_intro": "❗️ <b>Актуальные вопросы</b> ❗️\\n\\nВозможно, ответ на ваш вопрос уже есть в коротком видео 👇\\nНе нашли? Нажмите «🆘 Позвать оператора».",
 
                 "monitoring_enabled": "true",
@@ -3747,10 +3747,20 @@ def get_paginated_transactions(page: int = 1, per_page: int = 15) -> tuple[list[
             else:
                 plan_name = 'Оплата VPN'
         if not host_name:
-            host_name = 'Alma'
+            host_name = 'SpectraSokol'
+        # В сетке тарифов лежат базовые планы (2 устр), реальное число устройств выбирается
+        # слайдером и живёт в tier_device_count — подпись тарифа должна показывать его.
+        tier_dc = metadata.get('tier_device_count')
+        if plan_name and tier_dc:
+            try:
+                dc = int(tier_dc)
+                if dc > 0:
+                    plan_name = re.sub(r'^\d+\s*устр', f'{dc} устр', plan_name)
+            except (TypeError, ValueError):
+                pass
         transaction_dict['host_name'] = host_name
         transaction_dict['plan_name'] = plan_name
-        
+
         transactions.append(transaction_dict)
     
     return transactions, total

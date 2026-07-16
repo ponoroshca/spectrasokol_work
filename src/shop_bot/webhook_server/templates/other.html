@@ -326,6 +326,24 @@
                             {% endfor %}
                         </div>
 
+                        <!-- Test Mode: custom recipient id -->
+                        <div class="mt-4 hidden" id="test-id-wrap">
+                            <label class="text-[10px] text-white/40 uppercase tracking-widest">ID для тестовой отправки (можно несколько через запятую; пусто — всем админам)</label>
+                            <input type="text" id="test-user-id" placeholder="Напр.: 8796058153"
+                                class="w-full mt-1 bg-black/20 border border-white/10 text-white placeholder-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary/50">
+                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                const wrap = document.getElementById('test-id-wrap');
+                                document.querySelectorAll('input[name="mode"]').forEach(function (r) {
+                                    r.addEventListener('change', function () {
+                                        const cur = document.querySelector('input[name="mode"]:checked');
+                                        wrap.classList.toggle('hidden', !cur || cur.value !== 'test');
+                                    });
+                                });
+                            });
+                        </script>
+
                         <!-- Special Mode: Expiring Keys -->
                         <div class="mt-4">
                             <label class="relative cursor-pointer group">
@@ -4309,6 +4327,10 @@
             formData.append('csrf_token', window.getCsrfToken());
             formData.append('text', text);
             formData.append('mode', mode);
+            if (mode === 'test') {
+                const testId = (document.getElementById('test-user-id')?.value || '').trim();
+                if (testId) formData.append('test_user_id', testId);
+            }
             const skipBanned = document.getElementById('skip-banned-toggle').checked;
             formData.append('skip_banned', skipBanned);
             formData.append('buttons', JSON.stringify(buttons));

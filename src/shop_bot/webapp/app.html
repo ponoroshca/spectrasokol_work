@@ -3,22 +3,9 @@
 
 <head>
     <meta charset="utf-8" />
-    <!-- Yandex.Metrika counter -->
-    <script type="text/javascript">
-        (function(m,e,t,r,i,k,a){
-            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();
-            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110168848', 'ym');
-
-        ym(110168848, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-    </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/110168848" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-    <!-- /Yandex.Metrika counter -->
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
     <meta name="robots" content="noindex, nofollow" />
-    <meta name="theme-color" id="dynamic-theme-color" content="#080b12">
+    <meta name="theme-color" id="dynamic-theme-color" content="#0a0716">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="{{ panel_brand_title }}">
@@ -122,9 +109,9 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#1fc6d8",
+                        primary: "#a855f7",
                         "background-light": "#f3f4f6",
-                        "background-dark": "#080b12",
+                        "background-dark": "#0a0716",
                         "surface-light": "#ffffff",
                         "surface-dark": "#171717",
                         "surface-highlight-dark": "#262626",
@@ -178,10 +165,20 @@
         body.tg-fullscreen #setup-page,
         body.tg-fullscreen #profile-page,
         body.tg-fullscreen #support-page {
-            padding-top: calc(var(--alma-fs-top, 0px) + 4px) !important;
+            padding-top: calc(var(--spectra-fs-top, 0px) + 4px) !important;
         }
         body.tg-fullscreen .bottom-nav {
-            bottom: calc(10px + max(env(safe-area-inset-bottom), var(--alma-fs-bottom, 0px))) !important;
+            bottom: calc(10px + max(env(safe-area-inset-bottom), var(--spectra-fs-bottom, 0px))) !important;
+        }
+        /* В fullscreen нижнее меню приподнято на fs-bottom — кнопку оплаты поднимаем на ту же величину,
+           иначе меню перекрывает её (base-правило ниже учитывает только safe-area-inset-bottom). */
+        body.tg-fullscreen #purchase-page .fixed.bottom-0,
+        body.tg-fullscreen #renew-page .fixed.bottom-0 {
+            bottom: calc(78px + max(env(safe-area-inset-bottom), var(--spectra-fs-bottom, 0px))) !important;
+        }
+        body.tg-fullscreen #purchase-page,
+        body.tg-fullscreen #renew-page {
+            padding-bottom: calc(124px + max(env(safe-area-inset-bottom), var(--spectra-fs-bottom, 0px))) !important;
         }
 
         #support-page {
@@ -223,13 +220,13 @@
 
         body {
             font-family: 'Manrope', sans-serif;
-            background: #030507;
+            background: #060311;
             color: #f8fafc;
-            --alma-green: #1ec8e2;
-            --alma-cyan-dark: #19b0dd;
-            --alma-bg: #030507;
-            --alma-card: rgba(12, 16, 18, 0.96);
-            --alma-muted: rgba(167, 243, 208, 0.72);
+            --spectra-purple: #a855f7;
+            --spectra-purple-dark: #9333ea;
+            --spectra-bg: #060311;
+            --spectra-card: rgba(12, 16, 18, 0.96);
+            --spectra-muted: rgba(216, 180, 254, 0.72);
         }
 
         body::before {
@@ -240,14 +237,14 @@
             z-index: 0;
             background:
                 radial-gradient(circle at 50% 30%, rgba(0, 255, 179, 0.06), transparent 35%),
-                radial-gradient(circle at 50% 60%, transparent 0 24%, rgba(110, 222, 252, 0.14) 24.3%, transparent 24.7%),
-                radial-gradient(circle at 50% 60%, transparent 0 38%, rgba(110, 222, 252, 0.11) 38.3%, transparent 38.7%),
-                radial-gradient(circle at 50% 60%, transparent 0 52%, rgba(110, 222, 252, 0.09) 52.3%, transparent 52.7%),
-                radial-gradient(circle at 50% 60%, transparent 0 66%, rgba(110, 222, 252, 0.07) 66.3%, transparent 66.7%);
+                radial-gradient(circle at 50% 60%, transparent 0 24%, rgba(192, 132, 252, 0.14) 24.3%, transparent 24.7%),
+                radial-gradient(circle at 50% 60%, transparent 0 38%, rgba(192, 132, 252, 0.11) 38.3%, transparent 38.7%),
+                radial-gradient(circle at 50% 60%, transparent 0 52%, rgba(192, 132, 252, 0.09) 52.3%, transparent 52.7%),
+                radial-gradient(circle at 50% 60%, transparent 0 66%, rgba(192, 132, 252, 0.07) 66.3%, transparent 66.7%);
             opacity: 0.85;
         }
 
-        /* ===== AlmaVPN Home Hero ===== */
+        /* ===== SpectraSokol Home Hero ===== */
         .home-hero {
             flex: 1;
             display: flex;
@@ -273,10 +270,10 @@
             inset: 0;
             border-radius: 50%;
             background:
-                radial-gradient(circle, transparent 0 24%, rgba(110, 222, 252, 0.12) 24.3%, transparent 24.7%),
-                radial-gradient(circle, transparent 0 38%, rgba(110, 222, 252, 0.09) 38.3%, transparent 38.7%),
-                radial-gradient(circle, transparent 0 52%, rgba(110, 222, 252, 0.07) 52.3%, transparent 52.7%),
-                radial-gradient(circle, transparent 0 66%, rgba(110, 222, 252, 0.05) 66.3%, transparent 66.7%);
+                radial-gradient(circle, transparent 0 24%, rgba(192, 132, 252, 0.12) 24.3%, transparent 24.7%),
+                radial-gradient(circle, transparent 0 38%, rgba(192, 132, 252, 0.09) 38.3%, transparent 38.7%),
+                radial-gradient(circle, transparent 0 52%, rgba(192, 132, 252, 0.07) 52.3%, transparent 52.7%),
+                radial-gradient(circle, transparent 0 66%, rgba(192, 132, 252, 0.05) 66.3%, transparent 66.7%);
         }
 
         .home-shield-wrap {
@@ -323,7 +320,7 @@
         }
 
         .home-status-line.is-online {
-            color: #37d6da;
+            color: #c084fc;
         }
 
         .home-status-line.is-offline {
@@ -348,9 +345,9 @@
         }
 
         .home-badge-active {
-            background: rgba(30, 196, 226, 0.14);
-            color: #a6e8f5;
-            border-color: rgba(30, 196, 226, 0.22);
+            background: rgba(168, 85, 247, 0.14);
+            color: #d8b4fe;
+            border-color: rgba(168, 85, 247, 0.22);
         }
 
         .home-actions {
@@ -363,7 +360,7 @@
             position: relative;
             align-self: center;
             max-width: 92%;
-            background: var(--alma-green);
+            background: var(--spectra-purple);
             color: #ffffff;
             font-size: 12px;
             font-weight: 700;
@@ -371,7 +368,7 @@
             text-align: center;
             padding: 10px 14px;
             border-radius: 14px;
-            box-shadow: 0 8px 24px rgba(30, 196, 226, 0.28);
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.28);
         }
 
         .home-tooltip::after {
@@ -382,7 +379,7 @@
             transform: translateX(-50%);
             border-left: 8px solid transparent;
             border-right: 8px solid transparent;
-            border-top: 8px solid var(--alma-green);
+            border-top: 8px solid var(--spectra-purple);
         }
 
         .home-btn-purchase {
@@ -408,8 +405,8 @@
             letter-spacing: 0.08em;
             padding: 3px 8px;
             border-radius: 999px;
-            background: rgba(31, 198, 224, 0.28);
-            color: #cdf2fb;
+            background: rgba(168, 85, 247, 0.28);
+            color: #ecdafd;
             border: 1px solid rgba(110, 231, 183, 0.4);
             white-space: nowrap;
         }
@@ -419,15 +416,15 @@
             overflow: hidden;
             border-radius: 18px;
             min-height: auto;
-            background: linear-gradient(135deg, #0e93b3 0%, #1fc6d8 52%, #37d6da 100%);
-            border: 1px solid rgba(167, 243, 208, 0.5);
-            color: #eefcff;
+            background: linear-gradient(135deg, #0e93b3 0%, #a855f7 52%, #c084fc 100%);
+            border: 1px solid rgba(216, 180, 254, 0.5);
+            color: #fbf5ff;
             padding: 0.8rem 0.85rem;
             display: flex;
             align-items: center;
             gap: 12px;
             text-align: left;
-            box-shadow: 0 8px 24px rgba(31, 198, 224, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.22);
         }
 
         /* Бегущий блик по кнопке триала */
@@ -514,7 +511,7 @@
             border-radius: 999px;
             min-height: 50px;
             background: #ffffff;
-            color: #080b12;
+            color: #0a0716;
             font-weight: 800;
             font-size: 14px;
             padding: 0.72rem 1rem;
@@ -536,12 +533,12 @@
         }
 
         .home-setup-label {
-            color: #080b12;
+            color: #0a0716;
             font-weight: 800;
             font-size: 15px;
         }
 
-        /* AlmaVPN subpages — screenshots/2026-06-02 */
+        /* SpectraSokol subpages — screenshots/2026-06-02 */
         #purchase-page,
         #renew-page,
         #setup-page,
@@ -605,9 +602,9 @@
             display: inline-flex;
             align-items: center;
             border-radius: 999px;
-            background: rgba(31, 198, 224, 0.28);
-            border: 1px solid rgba(31, 198, 224, 0.38);
-            color: #eafbff;
+            background: rgba(168, 85, 247, 0.28);
+            border: 1px solid rgba(168, 85, 247, 0.38);
+            color: #f9f0ff;
             font-size: 10px;
             font-weight: 800;
             padding: 3px 7px;
@@ -617,7 +614,7 @@
 
         .plan-star-badge {
             font-size: 14px !important;
-            color: var(--alma-green) !important;
+            color: var(--spectra-purple) !important;
         }
 
         .plan-card-badges {
@@ -683,7 +680,7 @@
             margin-top: 0;
         }
 
-        /* AlmaVPN pixel-perfect (screenshots 2026-06-02) */
+        /* SpectraSokol pixel-perfect (screenshots 2026-06-02) */
         #main-page > header {
             display: none;
         }
@@ -764,7 +761,7 @@
         }
 
         #purchase-page .compact-hero .compact-subtitle {
-            color: rgba(167, 243, 208, 0.62);
+            color: rgba(216, 180, 254, 0.62);
             font-size: 12px;
             line-height: 1.35;
         }
@@ -784,7 +781,7 @@
         .tier-dot.is-past {
             width: 10px;
             height: 10px;
-            background: #1cc8de;
+            background: #a855f7;
             box-shadow: none;
         }
 
@@ -797,23 +794,23 @@
             width: 26px;
             height: 26px;
             background: #0e2832;
-            border: 5px solid #1cc8de;
+            border: 5px solid #a855f7;
         }
 
-        .alma-pay-modal-btn {
+        .spectra-pay-modal-btn {
             border-radius: 999px;
             min-height: 56px;
             font-size: 16px;
             font-weight: 800;
         }
 
-        .alma-pay-modal-btn:not(:disabled) {
-            background: #1ec8e2 !important;
+        .spectra-pay-modal-btn:not(:disabled) {
+            background: #a855f7 !important;
             color: #ffffff !important;
         }
 
-        .alma-pay-modal-btn:disabled {
-            background: rgba(30, 196, 226, 0.38) !important;
+        .spectra-pay-modal-btn:disabled {
+            background: rgba(168, 85, 247, 0.38) !important;
             color: rgba(255, 255, 255, 0.55) !important;
         }
 
@@ -830,7 +827,7 @@
             color: rgba(156, 163, 175, 0.88);
         }
 
-        #payment-modal .alma-payment-info {
+        #payment-modal .spectra-payment-info {
             background: rgba(26, 31, 29, 0.98);
         }
 
@@ -846,7 +843,7 @@
             pointer-events: none;
             z-index: 1;
             opacity: 0;
-            background: conic-gradient(from -90deg, #1cc8de 0deg, #1cc8de var(--setup-arc-deg, 0deg), transparent var(--setup-arc-deg, 0deg));
+            background: conic-gradient(from -90deg, #a855f7 0deg, #a855f7 var(--setup-arc-deg, 0deg), transparent var(--setup-arc-deg, 0deg));
             -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
             mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
         }
@@ -913,12 +910,12 @@
         .support-msg-user .support-msg-bubble {
             max-width: 88%;
             margin-left: auto;
-            background: linear-gradient(135deg, #19b0dd, #1ec8e2);
+            background: linear-gradient(135deg, #9333ea, #a855f7);
             color: #fff;
             border: none;
             border-radius: 18px 18px 4px 18px;
             padding: 10px 12px 8px;
-            box-shadow: 0 8px 20px rgba(30, 196, 226, 0.22);
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.22);
         }
 
         .support-msg-user .support-msg-time {
@@ -991,21 +988,21 @@
         #support-send-btn {
             width: 44px !important;
             height: 44px !important;
-            background: linear-gradient(135deg, #19b0dd, #1ec8e2) !important;
+            background: linear-gradient(135deg, #9333ea, #a855f7) !important;
             color: #fff !important;
             border: none !important;
-            box-shadow: 0 6px 16px rgba(30, 196, 226, 0.32);
+            box-shadow: 0 6px 16px rgba(168, 85, 247, 0.32);
         }
 
-        .alma-payment-method-btn {
+        .spectra-payment-method-btn {
             min-height: 74px;
             border-radius: 18px !important;
             background: rgba(26, 31, 29, 0.98) !important;
             border: 1px solid rgba(255, 255, 255, 0.06) !important;
         }
 
-        .alma-payment-method-btn:hover {
-            border-color: rgba(30, 196, 226, 0.28) !important;
+        .spectra-payment-method-btn:hover {
+            border-color: rgba(168, 85, 247, 0.28) !important;
             background: rgba(30, 38, 35, 0.98) !important;
         }
 
@@ -1045,7 +1042,7 @@
 
         .profile-device-row-icon {
             font-size: 22px;
-            color: var(--tg-theme-button-color, #37d6da);
+            color: var(--tg-theme-button-color, #c084fc);
             width: 40px;
             height: 40px;
             display: flex;
@@ -1208,8 +1205,8 @@
         .setup-wizard-primary {
             border-radius: 999px;
             min-height: 56px;
-            background: linear-gradient(90deg, #19b0dd, #1ec8e2);
-            color: #f2fdff;
+            background: linear-gradient(90deg, #9333ea, #a855f7);
+            color: #fdf7ff;
             font-weight: 800;
             font-size: 15px;
             padding: 0.85rem 1rem;
@@ -1245,7 +1242,7 @@
         }
 
         .setup-wizard-progress-seg.active {
-            background: linear-gradient(90deg, #19b0dd, #1ec8e2);
+            background: linear-gradient(90deg, #9333ea, #a855f7);
         }
 
         .setup-step-panel {
@@ -1275,7 +1272,7 @@
         .setup-step-subtitle {
             margin-top: 0.5rem;
             font-size: 13px;
-            color: rgba(167, 243, 208, 0.75);
+            color: rgba(216, 180, 254, 0.75);
             line-height: 1.45;
             padding: 0 0.75rem;
             font-weight: 500;
@@ -1314,8 +1311,8 @@
             width: 96px;
             height: 96px;
             border-radius: 999px;
-            background: rgba(30, 196, 226, 0.12);
-            border: 2px solid rgba(30, 196, 226, 0.35);
+            background: rgba(168, 85, 247, 0.12);
+            border: 2px solid rgba(168, 85, 247, 0.35);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1324,7 +1321,7 @@
 
         .setup-step-done-check .material-icons-round {
             font-size: 52px;
-            color: #1ec8e2;
+            color: #a855f7;
         }
 
         .setup-keys-section.is-collapsed {
@@ -1460,16 +1457,16 @@
             display: none !important;
         }
 
-        .alma-plan-card.border-primary,
-        .alma-plan-card.border-2 {
-            border-color: var(--alma-green) !important;
+        .spectra-plan-card.border-primary,
+        .spectra-plan-card.border-2 {
+            border-color: var(--spectra-purple) !important;
             border-width: 2px !important;
-            box-shadow: 0 0 0 1px rgba(30, 196, 226, 0.12);
+            box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.12);
         }
 
         .plan-btn.border-primary .material-icons-round,
-        .alma-plan-card.border-primary .material-icons-round {
-            color: var(--alma-green);
+        .spectra-plan-card.border-primary .material-icons-round {
+            color: var(--spectra-purple);
         }
 
 
@@ -1515,8 +1512,8 @@
         }
 
         .action-pill-primary {
-            background: linear-gradient(90deg, #19b0dd, #1cc8de);
-            color: #f2fdff;
+            background: linear-gradient(90deg, #9333ea, #a855f7);
+            color: #fdf7ff;
             box-shadow: 0 10px 28px rgba(8, 196, 145, 0.32);
         }
 
@@ -1527,7 +1524,7 @@
         }
 
         .plan-card-glow {
-            background: radial-gradient(circle at -10% 0%, rgba(31, 198, 224, 0.2), transparent 44%);
+            background: radial-gradient(circle at -10% 0%, rgba(168, 85, 247, 0.2), transparent 44%);
             opacity: 0;
             transition: opacity 0.2s ease;
         }
@@ -1561,9 +1558,9 @@
             top: 14px;
             right: 12px;
             border-radius: 999px;
-            background: rgba(31, 198, 224, 0.24);
-            border: 1px solid rgba(31, 198, 224, 0.32);
-            color: #cdf2fb;
+            background: rgba(168, 85, 247, 0.24);
+            border: 1px solid rgba(168, 85, 247, 0.32);
+            color: #ecdafd;
             font-size: 12px;
             font-weight: 800;
             padding: 4px 9px;
@@ -1612,10 +1609,10 @@
         }
 
         .bottom-tab.active {
-            background: linear-gradient(135deg, #19b0dd, #1cc8de);
-            color: #f2fdff;
+            background: linear-gradient(135deg, #9333ea, #a855f7);
+            color: #fdf7ff;
             border: none;
-            box-shadow: 0 6px 18px rgba(31, 198, 224, 0.38);
+            box-shadow: 0 6px 18px rgba(168, 85, 247, 0.38);
         }
 
         /* Десктоп-элементы скрыты на мобилке/в Telegram по умолчанию */
@@ -1665,8 +1662,8 @@
         .device-discount-live {
             border-radius: 999px;
             background: rgba(25, 176, 221, 0.22);
-            border: 1px solid rgba(31, 198, 224, 0.24);
-            color: #cdf2fb;
+            border: 1px solid rgba(168, 85, 247, 0.24);
+            color: #ecdafd;
             padding: 5px 11px;
             font-size: 11px;
             font-weight: 800;
@@ -1734,7 +1731,7 @@
             width: 24px;
             height: 24px;
             background: #123a46;
-            border: 5px solid #1cc8de;
+            border: 5px solid #a855f7;
             box-shadow: 0 0 0 2px rgba(10, 20, 18, 0.9);
         }
 
@@ -1773,7 +1770,7 @@
 
         #pay-button:not([disabled]),
         #renew-pay-button:not([disabled]) {
-            background: linear-gradient(90deg, #19b0dd, #1ec8e2) !important;
+            background: linear-gradient(90deg, #9333ea, #a855f7) !important;
             color: #ffffff !important;
         }
 
@@ -1856,7 +1853,7 @@
         /* ===== Планшет в браузере (768–1023, вне Telegram): центрированная карточка-приложение. ===== */
         @media (min-width: 768px) and (max-width: 1023px) {
             body:not(.tg-miniapp) {
-                background: radial-gradient(ellipse at 50% -10%, #0b1320 0%, #030507 58%);
+                background: radial-gradient(ellipse at 50% -10%, #110b20 0%, #060311 58%);
             }
             body:not(.tg-miniapp) #main-page,
             body:not(.tg-miniapp) #purchase-page,
@@ -1883,14 +1880,14 @@
            Только body:not(.tg-miniapp) — мобилка и Telegram остаются как есть. ===== */
         @media (min-width: 1024px) {
             body:not(.tg-miniapp) {
-                background: radial-gradient(ellipse at 50% -10%, #0b1320 0%, #030507 58%);
+                background: radial-gradient(ellipse at 50% -10%, #110b20 0%, #060311 58%);
             }
             body:not(.tg-miniapp) #bottom-nav {
                 left: 0; top: 0; bottom: auto; transform: none;
                 height: 100vh; width: 214px;
                 border-radius: 0; border: none;
                 border-right: 1px solid rgba(255, 255, 255, 0.06);
-                background: #0e1420; box-shadow: none; backdrop-filter: none;
+                background: #130e22; box-shadow: none; backdrop-filter: none;
                 display: flex; flex-direction: column; align-items: stretch;
                 justify-content: flex-start; gap: 6px; padding: 18px 14px;
             }
@@ -1906,7 +1903,7 @@
                 display: inline; font-size: 14px; font-weight: 500;
             }
             body:not(.tg-miniapp) #bottom-nav .bottom-tab.active {
-                background: rgba(31, 198, 224, 0.15); color: #1fc6d8; box-shadow: none;
+                background: rgba(168, 85, 247, 0.15); color: #a855f7; box-shadow: none;
             }
             body:not(.tg-miniapp) #main-page,
             body:not(.tg-miniapp) #purchase-page,
@@ -2001,8 +1998,8 @@
                 padding: 5px 14px 5px 5px; cursor: pointer;
             }
             body:not(.tg-miniapp) .desktop-account-avatar {
-                width: 30px; height: 30px; border-radius: 50%; background: rgba(31, 198, 224, 0.18);
-                color: #1fc6d8; display: flex; align-items: center; justify-content: center;
+                width: 30px; height: 30px; border-radius: 50%; background: rgba(168, 85, 247, 0.18);
+                color: #a855f7; display: flex; align-items: center; justify-content: center;
                 font-size: 12px; font-weight: 700;
             }
             body:not(.tg-miniapp) .desktop-account-email { font-size: 13px; color: #cbd5e1; }
@@ -2017,7 +2014,7 @@
             body:not(.tg-miniapp) #main-page .home-status-date { font-size: 13px; }
             body:not(.tg-miniapp) #main-page .home-hero-cta {
                 display: inline-flex !important; align-items: center; gap: 7px; white-space: nowrap;
-                background: #1fc6d8; color: #04222a; font-weight: 700; font-size: 13px;
+                background: #a855f7; color: #04222a; font-weight: 700; font-size: 13px;
                 padding: 11px 18px; border-radius: 12px; border: none; cursor: pointer; flex: none;
             }
             body:not(.tg-miniapp) #main-page .home-hero-cta .material-icons-round { font-size: 16px !important; }
@@ -2130,7 +2127,7 @@
         }
 
         /* ============================================================
-           ALMA — PREMIUM desktop skin (layered on top of base desktop redesign).
+           SPECTRASOKOL — PREMIUM desktop skin (layered on top of base desktop redesign).
            Scope: body:not(.tg-miniapp) + min-width:1024. Mobile/Telegram untouched.
            ============================================================ */
         @media (min-width: 1024px) {
@@ -2146,7 +2143,7 @@
           body:not(.tg-miniapp) #bottom-nav .nav-desktop-logo { padding: 4px 10px 20px !important; gap: 11px !important; align-items: center !important; }
           body:not(.tg-miniapp) #bottom-nav .nav-desktop-logo img { height: 34px !important; width: 34px !important; border-radius: 9px; }
           body:not(.tg-miniapp) #bottom-nav .nav-logo-word { font-size: 17px; font-weight: 800; letter-spacing: .04em; color: #f1f5f9; white-space: nowrap; }
-          body:not(.tg-miniapp) #bottom-nav .nav-logo-word span { color: #1fc6d8; }
+          body:not(.tg-miniapp) #bottom-nav .nav-logo-word span { color: #a855f7; }
           body:not(.tg-miniapp) #bottom-nav .bottom-tab {
             gap: 13px !important; padding: 11px 14px !important; min-height: 44px !important;
             border-radius: 12px !important; border: 1px solid transparent !important;
@@ -2155,8 +2152,8 @@
           body:not(.tg-miniapp) #bottom-nav .bottom-tab .material-icons-round { font-size: 21px !important; }
           body:not(.tg-miniapp) #bottom-nav .bottom-tab:hover { background: rgba(255,255,255,.045) !important; color: #dbe4ee !important; }
           body:not(.tg-miniapp) #bottom-nav .bottom-tab.active {
-            background: rgba(31,198,216,.13) !important; color: #1fc6d8 !important;
-            border-color: rgba(31,198,216,.22) !important;
+            background: rgba(168, 85, 247,.13) !important; color: #a855f7 !important;
+            border-color: rgba(168, 85, 247,.22) !important;
           }
           body:not(.tg-miniapp) #bottom-nav .nav-help-card {
             margin-top: auto; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
@@ -2166,7 +2163,7 @@
           body:not(.tg-miniapp) .nav-help-card .nhc-s { font-size: 11.5px; color: #9aa7b8; margin: 3px 0 11px; line-height: 1.5; }
           body:not(.tg-miniapp) .nav-help-card .nhc-b {
             width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px;
-            background: rgba(31,198,216,.13); color: #1fc6d8; border: 1px solid rgba(31,198,216,.25);
+            background: rgba(168, 85, 247,.13); color: #a855f7; border: 1px solid rgba(168, 85, 247,.25);
             border-radius: 10px; padding: 9px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit;
           }
           body:not(.tg-miniapp) .nav-help-card .nhc-b .material-icons-round { font-size: 16px; }
@@ -2195,8 +2192,8 @@
           /* ---------- HOME: hero + ring ---------- */
           body:not(.tg-miniapp) #main-page .home-hero {
             gap: 26px !important; padding: 26px 28px !important; border-radius: 24px !important;
-            background: linear-gradient(120deg, rgba(31,198,216,.10), rgba(31,198,216,.02) 60%), rgba(255,255,255,.035) !important;
-            border: 1px solid rgba(31,198,216,.18) !important;
+            background: linear-gradient(120deg, rgba(168, 85, 247,.10), rgba(168, 85, 247,.02) 60%), rgba(255,255,255,.035) !important;
+            border: 1px solid rgba(168, 85, 247,.18) !important;
           }
           body:not(.tg-miniapp) #main-page .home-hero-visual.has-ring { width: 120px !important; height: 120px !important; position: relative; }
           body:not(.tg-miniapp) #main-page .home-hero-visual.has-ring .home-hero-logo,
@@ -2209,8 +2206,8 @@
           body:not(.tg-miniapp) #main-page .home-status-title { font-size: 22px !important; }
           body:not(.tg-miniapp) #main-page .home-status-date { font-size: 14px !important; color: #9aa7b8 !important; font-weight: 600; }
           body:not(.tg-miniapp) #main-page .home-hero-cta {
-            background: linear-gradient(135deg, #22cee0, #15aec2) !important; color: #042a32 !important;
-            padding: 13px 20px !important; border-radius: 13px !important; box-shadow: 0 6px 20px rgba(31,198,216,.22) !important;
+            background: linear-gradient(135deg, #a855f7, #9333ea) !important; color: #200a38 !important;
+            padding: 13px 20px !important; border-radius: 13px !important; box-shadow: 0 6px 20px rgba(168, 85, 247,.22) !important;
           }
 
           /* ---------- HOME: action cards ---------- */
@@ -2225,10 +2222,10 @@
           body:not(.tg-miniapp) #main-page .home-btn-setup:hover,
           body:not(.tg-miniapp) #main-page .home-btn-renew:hover { border-color: rgba(255,255,255,.16) !important; transform: translateY(-2px) !important; }
           body:not(.tg-miniapp) #main-page .home-btn-purchase {
-            background: linear-gradient(135deg, rgba(31,198,216,.16), rgba(31,198,216,.04)) !important;
-            border-color: rgba(31,198,216,.28) !important;
+            background: linear-gradient(135deg, rgba(168, 85, 247,.16), rgba(168, 85, 247,.04)) !important;
+            border-color: rgba(168, 85, 247,.28) !important;
           }
-          body:not(.tg-miniapp) #main-page .home-actions .material-icons-round { font-size: 24px !important; color: #1fc6d8 !important; }
+          body:not(.tg-miniapp) #main-page .home-actions .material-icons-round { font-size: 24px !important; color: #a855f7 !important; }
           /* setup card was a WHITE mobile button (dark text + white shadow) — make it match the dark desktop card */
           body:not(.tg-miniapp) #main-page .home-btn-setup { color: #f1f5f9 !important; box-shadow: none !important; }
           body:not(.tg-miniapp) #main-page .home-setup-label { color: #f1f5f9 !important; }
@@ -2243,7 +2240,7 @@
             border-radius: 14px !important; padding: 16px 8px !important; transition: .15s;
           }
           body:not(.tg-miniapp) #profile-page .profile-platform-card:hover { border-color: rgba(255,255,255,.16) !important; background: rgba(255,255,255,.05) !important; }
-          body:not(.tg-miniapp) #profile-page .profile-platform-icon { color: #1fc6d8 !important; }
+          body:not(.tg-miniapp) #profile-page .profile-platform-icon { color: #a855f7 !important; }
           body:not(.tg-miniapp) #profile-page .profile-device-row { border-radius: 14px !important; }
           body:not(.tg-miniapp) #profile-page .profile-sub-link-bar {
             background: rgba(255,255,255,.04) !important; border: 1px solid rgba(255,255,255,.08) !important;
@@ -2256,8 +2253,8 @@
           /* ---------- SUPPORT: premium CTA + tiles ---------- */
           body:not(.tg-miniapp) #support-page #support-bot-panel > a {
             border-radius: 22px !important; padding: 26px !important;
-            background: linear-gradient(120deg, rgba(31,198,216,.10), rgba(31,198,216,.02)), rgba(255,255,255,.035) !important;
-            border: 1px solid rgba(31,198,216,.18) !important;
+            background: linear-gradient(120deg, rgba(168, 85, 247,.10), rgba(168, 85, 247,.02)), rgba(255,255,255,.035) !important;
+            border: 1px solid rgba(168, 85, 247,.18) !important;
           }
           body:not(.tg-miniapp) #support-page .feature-tile { border-radius: 16px !important; padding: 17px 18px !important; transition: .15s; }
           body:not(.tg-miniapp) #support-page .feature-tile:hover { border-color: rgba(255,255,255,.16) !important; background: rgba(255,255,255,.05) !important; }
@@ -2268,8 +2265,8 @@
             border-radius: 22px; padding: 30px 26px;
           }
           body:not(.tg-miniapp) #setup-page .setup-wizard-primary {
-            background: linear-gradient(135deg, #22cee0, #15aec2) !important; color: #042a32 !important;
-            box-shadow: 0 6px 20px rgba(31,198,216,.22) !important;
+            background: linear-gradient(135deg, #a855f7, #9333ea) !important; color: #200a38 !important;
+            box-shadow: 0 6px 20px rgba(168, 85, 247,.22) !important;
           }
         }
     </style>
@@ -2286,15 +2283,15 @@
         #app-splash.is-hidden{opacity:0;visibility:hidden;pointer-events:none;}
         @keyframes splashAutoHide{to{opacity:0;visibility:hidden;pointer-events:none;}}
         #app-splash .splash-rings{position:absolute;top:42%;left:50%;width:min(440px,92vw);height:min(440px,92vw);transform:translate(-50%,-50%);border-radius:50%;
-            background:radial-gradient(circle,transparent 0 17%,rgba(110,222,252,.15) 17.3%,transparent 17.7%),
-                radial-gradient(circle,transparent 0 29%,rgba(110,222,252,.11) 29.3%,transparent 29.7%),
-                radial-gradient(circle,transparent 0 41%,rgba(110,222,252,.08) 41.3%,transparent 41.7%),
-                radial-gradient(circle,transparent 0 53%,rgba(110,222,252,.06) 53.3%,transparent 53.7%),
-                radial-gradient(circle,transparent 0 65%,rgba(110,222,252,.045) 65.3%,transparent 65.7%);
+            background:radial-gradient(circle,transparent 0 17%,rgba(192, 132, 252,.15) 17.3%,transparent 17.7%),
+                radial-gradient(circle,transparent 0 29%,rgba(192, 132, 252,.11) 29.3%,transparent 29.7%),
+                radial-gradient(circle,transparent 0 41%,rgba(192, 132, 252,.08) 41.3%,transparent 41.7%),
+                radial-gradient(circle,transparent 0 53%,rgba(192, 132, 252,.06) 53.3%,transparent 53.7%),
+                radial-gradient(circle,transparent 0 65%,rgba(192, 132, 252,.045) 65.3%,transparent 65.7%);
             animation:splashRings 3s ease-in-out infinite;}
         @keyframes splashRings{0%,100%{opacity:.7;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}}
         #app-splash .splash-logo{position:relative;z-index:2;width:118px;height:118px;border-radius:26px;display:block;
-            filter:drop-shadow(0 0 26px rgba(110,222,252,.38)) drop-shadow(0 12px 30px rgba(0,0,0,.55));animation:splashPulse 2.4s ease-in-out infinite;}
+            filter:drop-shadow(0 0 26px rgba(192, 132, 252,.38)) drop-shadow(0 12px 30px rgba(0,0,0,.55));animation:splashPulse 2.4s ease-in-out infinite;}
         @keyframes splashPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
         #app-splash .splash-text{position:relative;z-index:2;text-align:center;}
         #app-splash .splash-brand{font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#fff;font-size:15px;}
@@ -2303,9 +2300,9 @@
     </style>
     <div id="app-splash">
         <div class="splash-rings" aria-hidden="true"></div>
-        <img src="/module/ico/Alma-VPN-icon.png" alt="Alma VPN" class="splash-logo">
+        <img src="/module/ico/SpectraSokol-VPN-icon.png" alt="SpectraSokol" class="splash-logo">
         <div class="splash-text">
-            <div class="splash-brand">Alma VPN</div>
+            <div class="splash-brand">SpectraSokol</div>
             <div class="splash-sub">Загрузка…</div>
         </div>
     </div>
@@ -2396,11 +2393,11 @@
             <button id="purchase-btn" type="button"
                 class="home-btn-purchase w-full transition-transform active:scale-[0.98]">
                 <span class="home-purchase-left flex items-center gap-2 min-w-0 flex-1">
-                    <span class="material-icons-round text-[20px] text-cyan-300 shrink-0">language</span>
+                    <span class="material-icons-round text-[20px] text-purple-300 shrink-0">language</span>
                     <span class="home-purchase-label truncate">{{ home_buy_button_prefix }}</span>
                 </span>
                 <span class="home-purchase-price shrink-0 flex flex-col items-end leading-none">
-                    <span class="home-purchase-from text-cyan-200/80 text-[12px] font-semibold">{{ home_buy_button_price_prefix }}</span>
+                    <span class="home-purchase-from text-purple-200/80 text-[12px] font-semibold">{{ home_buy_button_price_prefix }}</span>
                     <span class="font-extrabold">{{ min_price }}</span>
                 </span>
             </button>
@@ -2417,14 +2414,14 @@
             </button>
         </nav>
         <!-- «Добавить на экран „Домой"» — только в Telegram Mini App. По клику выкидывает в браузер
-             на app.almapluse.ru (с пред-авторизацией) + показывает вшитую инструкцию по установке PWA.
+             на vpn-vless.ru (с пред-авторизацией) + показывает вшитую инструкцию по установке PWA.
              Показывается из JS (initInstallAppButton). -->
         <button id="add-home-screen-btn" type="button" style="display:none;"
             class="w-full mt-2.5 flex items-center gap-2.5 rounded-2xl px-4 py-2.5 text-left glass-card border border-primary/20 transition-transform active:scale-[0.98]">
             <span class="material-icons-round text-[22px] text-primary shrink-0">add_to_home_screen</span>
             <span class="flex flex-col min-w-0 flex-1 leading-tight">
                 <span class="text-[13px] font-semibold text-white truncate">Добавить на экран «Домой»</span>
-                <span class="text-[11px] text-cyan-200/70 truncate">Открыть как приложение на телефоне</span>
+                <span class="text-[11px] text-purple-200/70 truncate">Открыть как приложение на телефоне</span>
             </span>
             <span class="material-icons-round text-[18px] text-gray-500 shrink-0">chevron_right</span>
         </button>
@@ -2484,7 +2481,7 @@
         <main class="compact-main flex-grow flex flex-col gap-2.5 pt-0 relative z-10">
             <div class="compact-hero px-1 mb-0.5">
                 <h2 class="compact-title text-[1.35rem] sm:text-4xl font-black text-white leading-tight tracking-tight">{{ purchase_title }}</h2>
-                <p class="compact-subtitle mt-1.5 text-[10px] sm:text-base text-cyan-200/80 font-medium leading-snug">{{ purchase_subtitle }}</p>
+                <p class="compact-subtitle mt-1.5 text-[10px] sm:text-base text-purple-200/80 font-medium leading-snug">{{ purchase_subtitle }}</p>
             </div>
             <div class="compact-info-card px-1 mb-2 {{ purchase_info_card_hidden_class }}">
                 <div
@@ -2546,7 +2543,7 @@
                             <div class="flex items-center gap-2">
                                 <span id="tier-device-title" class="text-[19px] leading-tight font-extrabold text-white tracking-tight">{{ purchase_device_card_title_one }}</span>
                             </div>
-                            <div class="mt-0.5 text-[12px] text-cyan-100/75">{{ purchase_device_card_subtitle }}</div>
+                            <div class="mt-0.5 text-[12px] text-purple-100/75">{{ purchase_device_card_subtitle }}</div>
                         </div>
                     </div>
                     <div id="tier-discount-badge" class="device-discount-live hidden"></div>
@@ -2554,7 +2551,7 @@
                 <div class="sr-only">
                     <span id="tier-count-label">1</span>
                 </div>
-                <div id="tier-price-label" class="text-[10px] text-cyan-100/65 mb-3">{{ purchase_devices_hint_text }}</div>
+                <div id="tier-price-label" class="text-[10px] text-purple-100/65 mb-3">{{ purchase_devices_hint_text }}</div>
                 <div class="flex items-center gap-1.5" id="tier-dots-container"></div>
             </div>
 
@@ -2564,7 +2561,11 @@
         </main>
 
         <footer class="py-0 relative z-10 flex justify-center shrink-0">
-            <div class="fixed bottom-0 left-0 w-full p-2.5 bg-black/0 backdrop-blur-lg z-50 flex justify-center">
+            <div class="fixed bottom-0 left-0 w-full p-2.5 bg-black/0 backdrop-blur-lg z-50 flex flex-col items-center gap-2">
+                <label class="flex items-start gap-2 w-full max-w-[416px] mx-auto cursor-pointer select-none">
+                    <input type="checkbox" id="purchase-terms-check" class="mt-[1px] w-[18px] h-[18px] flex-none rounded" style="accent-color:#a855f7">
+                    <span class="text-[11px] text-purple-200/70 leading-snug">Я принимаю <a href="{{ terms_url }}" onclick="event.preventDefault();event.stopPropagation();window.openLinkSafe('{{ terms_url }}')" class="text-[#c084fc] underline underline-offset-2">Условия использования</a> и <a href="{{ privacy_url }}" onclick="event.preventDefault();event.stopPropagation();window.openLinkSafe('{{ privacy_url }}')" class="text-[#c084fc] underline underline-offset-2">Политику конфиденциальности</a></span>
+                </label>
                 <button id="pay-button"
                     class="w-full max-w-[416px] mx-auto bg-white/5 text-gray-500 py-3 px-4 rounded-2xl font-bold text-[14px] transition-all payment-pill pointer-events-none min-h-[52px]"
                     disabled>
@@ -2688,7 +2689,11 @@
         </main>
 
         <footer class="py-0 relative z-10 flex justify-center shrink-0">
-            <div class="fixed bottom-0 left-0 w-full p-3 bg-black/0 backdrop-blur-lg z-50 flex justify-center">
+            <div class="fixed bottom-0 left-0 w-full p-3 bg-black/0 backdrop-blur-lg z-50 flex flex-col items-center gap-2">
+                <label class="flex items-start gap-2 w-full max-w-[416px] mx-auto cursor-pointer select-none">
+                    <input type="checkbox" id="renew-terms-check" class="mt-[1px] w-[18px] h-[18px] flex-none rounded" style="accent-color:#a855f7">
+                    <span class="text-[11px] text-purple-200/70 leading-snug">Я принимаю <a href="{{ terms_url }}" onclick="event.preventDefault();event.stopPropagation();window.openLinkSafe('{{ terms_url }}')" class="text-[#c084fc] underline underline-offset-2">Условия использования</a> и <a href="{{ privacy_url }}" onclick="event.preventDefault();event.stopPropagation();window.openLinkSafe('{{ privacy_url }}')" class="text-[#c084fc] underline underline-offset-2">Политику конфиденциальности</a></span>
+                </label>
                 <button id="renew-pay-button"
                     class="w-full max-w-[416px] mx-auto bg-white/5 text-gray-500 py-3 px-4 rounded-2xl font-bold text-[14px] transition-all payment-pill pointer-events-none min-h-[52px]"
                     disabled>
@@ -2748,7 +2753,7 @@
             <div id="setup-step-intro" class="setup-step-panel is-active">
                 <div class="setup-wizard-intro">
                     <h2 id="setup-intro-title" class="compact-title font-black text-white leading-tight tracking-tight">{{ setup_title }}</h2>
-                    <p class="mt-2 text-[13px] sm:text-[14px] text-cyan-200/80 font-medium leading-snug px-2">{{ setup_subtitle }}</p>
+                    <p class="mt-2 text-[13px] sm:text-[14px] text-purple-200/80 font-medium leading-snug px-2">{{ setup_subtitle }}</p>
                     <div class="setup-wizard-visual">
                         <div class="home-rings" aria-hidden="true"></div>
                         <div class="setup-progress-ring" aria-hidden="true"></div>
@@ -2952,10 +2957,10 @@
         <div id="support-hero-block" class="pt-0 pb-2 relative z-10">
             <div class="feature-card p-3 sm:p-4">
                 <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-[18px] sm:rounded-[20px] bg-white/5 border border-white/10 flex items-center justify-center mb-3 sm:mb-3.5">
-                    <span class="material-icons-round text-[22px] sm:text-[26px] text-cyan-200">support_agent</span>
+                    <span class="material-icons-round text-[22px] sm:text-[26px] text-purple-200">support_agent</span>
                 </div>
                 <h2 class="text-[22px] sm:text-[28px] leading-[0.95] font-black text-white tracking-tight">{{ support_quick_section_title }}</h2>
-                <p class="mt-1.5 text-[11px] sm:text-[12px] text-cyan-100/75 leading-snug">{{ support_quick_section_subtitle }}</p>
+                <p class="mt-1.5 text-[11px] sm:text-[12px] text-purple-100/75 leading-snug">{{ support_quick_section_subtitle }}</p>
             </div>
         </div>
 
@@ -2965,7 +2970,7 @@
                 class="feature-card p-4 sm:p-5 block text-center no-underline hover:bg-white/[0.07] transition-colors">
                 <span class="material-icons-round text-3xl text-primary">forum</span>
                 <h3 class="mt-3 text-[18px] sm:text-[22px] font-black text-white">{{ support_bot_cta_title }}</h3>
-                <p class="mt-2 text-[11px] sm:text-[12px] text-cyan-100/75 leading-snug px-2">{{ support_bot_cta_subtitle }}</p>
+                <p class="mt-2 text-[11px] sm:text-[12px] text-purple-100/75 leading-snug px-2">{{ support_bot_cta_subtitle }}</p>
                 <span class="inline-flex mt-4 items-center gap-2 bg-primary/20 border border-primary/30 text-primary px-4 py-2.5 rounded-xl font-bold text-[11px] uppercase tracking-wide">
                     <span class="material-icons-round text-[16px]">open_in_new</span>
                     {{ support_bot_open_button_text }}
@@ -2974,11 +2979,11 @@
             <button type="button" id="support-faq-toggle-bot" onclick="toggleFaqPanel(this)"
                 class="feature-tile w-full p-3 text-left flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                    <span class="material-icons-round text-cyan-200 text-[18px]">quiz</span>
+                    <span class="material-icons-round text-purple-200 text-[18px]">quiz</span>
                 </div>
                 <div class="min-w-0 flex-1">
                     <div class="text-[16px] sm:text-[20px] leading-none font-extrabold text-white">{{ support_faq_title }}</div>
-                    <div class="mt-1 text-[10px] sm:text-[11px] text-cyan-100/70">{{ support_faq_subtitle }}</div>
+                    <div class="mt-1 text-[10px] sm:text-[11px] text-purple-100/70">{{ support_faq_subtitle }}</div>
                 </div>
                 <span class="material-icons-round text-gray-400 text-[20px] shrink-0 transition-transform support-faq-chevron">expand_more</span>
             </button>
@@ -2986,11 +2991,11 @@
             <button type="button" onclick="window.location.hash='setup'"
                 class="feature-tile w-full p-3 text-left flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                    <span class="material-icons-round text-cyan-200 text-[18px]">devices</span>
+                    <span class="material-icons-round text-purple-200 text-[18px]">devices</span>
                 </div>
                 <div class="min-w-0">
                     <div class="text-[16px] sm:text-[20px] leading-none font-extrabold text-white">{{ support_other_device_title }}</div>
-                    <div class="mt-1 text-[10px] sm:text-[11px] text-cyan-100/70">{{ support_other_device_subtitle }}</div>
+                    <div class="mt-1 text-[10px] sm:text-[11px] text-purple-100/70">{{ support_other_device_subtitle }}</div>
                 </div>
             </button>
         </div>
@@ -3008,23 +3013,23 @@
             class="flex-grow flex flex-col gap-2.5 px-1 pb-2 relative z-10 hidden">
             <button type="button" id="support-open-ticket-banner" onclick="reopenCurrentTicket()"
                 class="feature-tile w-full p-3 text-left flex items-center gap-3 hidden">
-                <div class="w-10 h-10 rounded-2xl bg-cyan-500/15 border border-cyan-400/20 flex items-center justify-center shrink-0">
-                    <span class="material-icons-round text-cyan-300 text-[18px]">forum</span>
+                <div class="w-10 h-10 rounded-2xl bg-purple-500/15 border border-purple-400/20 flex items-center justify-center shrink-0">
+                    <span class="material-icons-round text-purple-300 text-[18px]">forum</span>
                 </div>
                 <div class="min-w-0 flex-1">
                     <div class="text-[16px] sm:text-[20px] leading-none font-extrabold text-white">{{ support_open_ticket_title }}</div>
-                    <div class="mt-1 text-[10px] sm:text-[11px] text-cyan-100/70">{{ support_open_ticket_subtitle }}</div>
+                    <div class="mt-1 text-[10px] sm:text-[11px] text-purple-100/70">{{ support_open_ticket_subtitle }}</div>
                 </div>
                 <span class="material-icons-round text-gray-400 text-[20px] shrink-0">chevron_right</span>
             </button>
             <button type="button" id="support-faq-toggle" onclick="toggleFaqPanel(this)"
                 class="feature-tile w-full p-3 text-left flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                    <span class="material-icons-round text-cyan-200 text-[18px]">quiz</span>
+                    <span class="material-icons-round text-purple-200 text-[18px]">quiz</span>
                 </div>
                 <div class="min-w-0 flex-1">
                     <div class="text-[16px] sm:text-[20px] leading-none font-extrabold text-white">{{ support_faq_title }}</div>
-                    <div class="mt-1 text-[10px] sm:text-[11px] text-cyan-100/70">{{ support_faq_subtitle }}</div>
+                    <div class="mt-1 text-[10px] sm:text-[11px] text-purple-100/70">{{ support_faq_subtitle }}</div>
                 </div>
                 <span id="support-faq-chevron" class="material-icons-round text-gray-400 text-[20px] shrink-0 transition-transform">expand_more</span>
             </button>
@@ -3034,22 +3039,22 @@
             <button type="button" onclick="window.location.hash='setup'"
                 class="feature-tile w-full p-3 text-left flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                    <span class="material-icons-round text-cyan-200 text-[18px]">devices</span>
+                    <span class="material-icons-round text-purple-200 text-[18px]">devices</span>
                 </div>
                 <div class="min-w-0">
                     <div class="text-[16px] sm:text-[20px] leading-none font-extrabold text-white">{{ support_other_device_title }}</div>
-                    <div class="mt-1 text-[10px] sm:text-[11px] text-cyan-100/70">{{ support_other_device_subtitle }}</div>
+                    <div class="mt-1 text-[10px] sm:text-[11px] text-purple-100/70">{{ support_other_device_subtitle }}</div>
                 </div>
             </button>
 
             <button type="button" onclick="openSupportContactPanel()"
                 class="feature-tile w-full p-3 text-left flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                    <span class="material-icons-round text-cyan-200 text-[18px]">headset_mic</span>
+                    <span class="material-icons-round text-purple-200 text-[18px]">headset_mic</span>
                 </div>
                 <div class="min-w-0">
                     <div class="text-[16px] sm:text-[20px] leading-none font-extrabold text-white">{{ support_contact_title }}</div>
-                    <div class="mt-1 text-[10px] sm:text-[11px] text-cyan-100/70">{{ support_contact_subtitle }}</div>
+                    <div class="mt-1 text-[10px] sm:text-[11px] text-purple-100/70">{{ support_contact_subtitle }}</div>
                 </div>
             </button>
 
@@ -3137,8 +3142,8 @@
 
     <nav class="bottom-nav" id="bottom-nav">
         <div class="nav-desktop-logo" aria-hidden="true">
-            <img src="/module/ico/Alma-VPN-icon.png" alt="">
-            <span class="nav-logo-word">ALMA <span>VPN</span></span>
+            <img src="/module/ico/SpectraSokol-VPN-icon.png" alt="">
+            <span class="nav-logo-word">Spectra<span>Sokol</span></span>
         </div>
         <button id="nav-tab-home" class="bottom-tab active" type="button" title="Главная">
             <span class="material-icons-round">home</span><span class="nav-tab-label">Главная</span>
@@ -3218,8 +3223,8 @@
                 try { initTgFullscreen(tgApp); } catch (e) { }
                 // Разрешить прокрутку контента: иначе вертикальный свайп в Telegram сворачивает/закрывает Mini App вместо скролла (Bot API 7.7+).
                 try { if (typeof tgApp.disableVerticalSwipes === 'function') tgApp.disableVerticalSwipes(); } catch (e) { }
-                tgApp.setHeaderColor('#080b12');
-                tgApp.setBackgroundColor('#080b12');
+                tgApp.setHeaderColor('#0a0716');
+                tgApp.setBackgroundColor('#0a0716');
                 try { initInstallAppButton(); } catch (e) { }
                 setTimeout(function () {
                     if (typeof applyTelegramUserProfile === 'function') applyTelegramUserProfile();
@@ -3229,7 +3234,7 @@
 
         // Полноэкранный режим Telegram (как у KAVARA) — Bot API 8.0+, только мобильные iOS/Android.
         // Убирает шапку Telegram; контент под самый верх. Отступы: статус-бар + плавающие кнопки Telegram
-        // сверху, home-indicator снизу — через --alma-fs-top/--alma-fs-bottom + класс body.tg-fullscreen.
+        // сверху, home-indicator снизу — через --spectra-fs-top/--spectra-fs-bottom + класс body.tg-fullscreen.
         function initTgFullscreen(tg) {
             try {
                 if (!tg) return;
@@ -3247,8 +3252,8 @@
                             bottom = num(sa.bottom) + num(csa.bottom);
                         }
                         var root = document.documentElement.style;
-                        root.setProperty('--alma-fs-top', top + 'px');
-                        root.setProperty('--alma-fs-bottom', bottom + 'px');
+                        root.setProperty('--spectra-fs-top', top + 'px');
+                        root.setProperty('--spectra-fs-bottom', bottom + 'px');
                         document.body.classList.toggle('tg-fullscreen', !!tg.isFullscreen);
                     } catch (e) { }
                 }
@@ -3262,7 +3267,7 @@
             } catch (e) { }
         }
 
-        // ==== PWA: установка кабинета app.almapluse.ru как отдельного приложения ====
+        // ==== PWA: установка кабинета vpn-vless.ru как отдельного приложения ====
         // Ловим событие установки заранее (Android) — кнопка «Установить» вызывает СИСТЕМНЫЙ диалог ОС.
         var _deferredInstallPrompt = null;
         window.addEventListener('beforeinstallprompt', function (e) {
@@ -3274,7 +3279,7 @@
             if (man) man.style.display = 'none'; // есть кнопка — ручной фолбэк не нужен
         });
 
-        // Кнопка в мини-аппе «Добавить на экран „Домой"» → выкидывает в браузер на app.almapluse.ru
+        // Кнопка в мини-аппе «Добавить на экран „Домой"» → выкидывает в браузер на vpn-vless.ru
         // (с пред-авторизацией + флаг ?install=1), где показывается инструкция и ставится standalone-PWA.
         function initInstallAppButton() {
             try {
@@ -3314,16 +3319,16 @@
                 st.id = 'pwa-instr-style';
                 st.textContent =
                     '.pwa-instr-backdrop{position:fixed;inset:0;z-index:2147483000;background:rgba(4,6,12,.82);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;}'
-                  + '.pwa-instr-card{width:100%;max-width:480px;background:#0e1420;border:1px solid rgba(255,255,255,.08);border-radius:22px 22px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -20px 60px rgba(0,0,0,.5);}'
+                  + '.pwa-instr-card{width:100%;max-width:480px;background:#130e22;border:1px solid rgba(255,255,255,.08);border-radius:22px 22px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -20px 60px rgba(0,0,0,.5);}'
                   + '.pwa-instr-head{display:flex;gap:12px;align-items:center;margin-bottom:18px;}'
                   + '.pwa-instr-head img{width:48px;height:48px;border-radius:13px;flex-shrink:0;}'
                   + '.pwa-instr-title{font-size:16px;font-weight:800;color:#fff;line-height:1.2;}'
                   + '.pwa-instr-sub{font-size:12px;color:#94a3b8;margin-top:3px;}'
                   + '.pwa-step{display:flex;align-items:center;gap:12px;margin-bottom:14px;color:#e2e8f0;font-size:14px;line-height:1.4;}'
                   + '.pwa-step b{color:#fff;}'
-                  + '.pwa-step-ic{flex-shrink:0;width:38px;height:38px;border-radius:11px;background:rgba(31,198,216,.12);color:#1fc6d8;display:flex;align-items:center;justify-content:center;font-size:21px;}'
+                  + '.pwa-step-ic{flex-shrink:0;width:38px;height:38px;border-radius:11px;background:rgba(168, 85, 247,.12);color:#a855f7;display:flex;align-items:center;justify-content:center;font-size:21px;}'
                   + '.pwa-note{font-size:12px;color:#8595a9;margin:2px 0 14px;line-height:1.5;}'
-                  + '.pwa-instr-install{width:100%;background:#1fc6d8;color:#04121a;font-weight:800;border:none;border-radius:14px;padding:15px;font-size:15px;margin-bottom:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;}'
+                  + '.pwa-instr-install{width:100%;background:#a855f7;color:#130725;font-weight:800;border:none;border-radius:14px;padding:15px;font-size:15px;margin-bottom:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;}'
                   + '.pwa-instr-close{width:100%;background:transparent;color:#94a3b8;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:13px;font-size:14px;cursor:pointer;}';
                 document.head.appendChild(st);
             }
@@ -3351,7 +3356,7 @@
             card.className = 'pwa-instr-backdrop';
             card.innerHTML =
                 '<div class="pwa-instr-card">'
-              + '<div class="pwa-instr-head"><img src="/module/ico/pwa-icon-192.png" alt=""><div><div class="pwa-instr-title">Установить приложение Alma</div><div class="pwa-instr-sub">Открывается как обычное приложение, без Telegram</div></div></div>'
+              + '<div class="pwa-instr-head"><img src="/module/ico/pwa-icon-192.png" alt=""><div><div class="pwa-instr-title">Установить приложение SpectraSokol</div><div class="pwa-instr-sub">Открывается как обычное приложение, без Telegram</div></div></div>'
               + body
               + '<button class="pwa-instr-close" id="pwa-instr-close">Понятно</button>'
               + '</div>';
@@ -3381,7 +3386,6 @@
         // В Метрике: Отчёты → Параметры визитов → source (telegram / web).
         try {
             if (typeof ym === 'function') {
-                ym(110168848, 'params', { source: document.body.classList.contains('tg-miniapp') ? 'telegram' : 'web' });
             }
         } catch (e) { }
         const mainPage = document.getElementById('main-page');
@@ -3526,8 +3530,12 @@
             }
         }
 
+        var _payIntent = { purchase: { enabled: false, price: 0, oldPrice: 0 }, renew: { enabled: false, price: 0, oldPrice: 0 } };
+        var _termsOk = { purchase: false, renew: false };
+
         function setPaymentButtonState(target, enabled, price = 0, oldPrice = 0) {
             const isRenew = target === 'renew';
+            _payIntent[target] = { enabled: enabled, price: price, oldPrice: oldPrice };
             const btn = document.getElementById(isRenew ? 'renew-pay-button' : 'pay-button');
             const labelEl = document.getElementById(isRenew ? 'renew-pay-button-text' : 'pay-button-text');
             const priceWrapEl = document.getElementById(isRenew ? 'renew-pay-button-price-wrap' : 'pay-button-price-wrap');
@@ -3537,10 +3545,9 @@
 
             if (!btn || !labelEl || !priceWrapEl || !priceEl || !oldPriceEl) return;
 
-            btn.disabled = !enabled;
+            const clickable = enabled && _termsOk[target];
+            btn.disabled = !clickable;
             if (enabled) {
-                btn.classList.remove('bg-white/5', 'text-gray-500', 'pointer-events-none', 'bg-white', 'text-black');
-                btn.classList.add('bg-gradient-to-r', 'from-[#19b0dd]', 'to-[#1ec8e2]', 'text-white', 'shadow-[0_8px_30px_rgba(30,196,226,0.28)]', 'active:scale-[0.97]');
                 labelEl.textContent = label;
                 priceWrapEl.classList.remove('hidden');
                 priceEl.textContent = `${Math.round(Number(price || 0))} ₽`;
@@ -3551,8 +3558,15 @@
                     oldPriceEl.textContent = '';
                     oldPriceEl.classList.add('hidden');
                 }
+                if (clickable) {
+                    btn.classList.remove('bg-white/5', 'text-gray-500', 'pointer-events-none', 'bg-white', 'text-black');
+                    btn.classList.add('bg-gradient-to-r', 'from-[#9333ea]', 'to-[#a855f7]', 'text-white', 'shadow-[0_8px_30px_rgba(168,85,247,0.28)]', 'active:scale-[0.97]');
+                } else {
+                    btn.classList.remove('bg-gradient-to-r', 'from-[#9333ea]', 'to-[#a855f7]', 'text-white', 'shadow-[0_8px_30px_rgba(168,85,247,0.28)]', 'active:scale-[0.97]', 'bg-white', 'text-black');
+                    btn.classList.add('bg-white/5', 'text-gray-500', 'pointer-events-none');
+                }
             } else {
-                btn.classList.remove('bg-gradient-to-r', 'from-[#19b0dd]', 'to-[#1ec8e2]', 'text-white', 'shadow-[0_8px_30px_rgba(30,196,226,0.28)]', 'active:scale-[0.97]', 'bg-white', 'text-black');
+                btn.classList.remove('bg-gradient-to-r', 'from-[#9333ea]', 'to-[#a855f7]', 'text-white', 'shadow-[0_8px_30px_rgba(168,85,247,0.28)]', 'active:scale-[0.97]', 'bg-white', 'text-black');
                 btn.classList.add('bg-white/5', 'text-gray-500', 'pointer-events-none');
                 labelEl.textContent = label;
                 priceWrapEl.classList.add('hidden');
@@ -3561,6 +3575,18 @@
                 oldPriceEl.classList.add('hidden');
             }
         }
+
+        function _wireTermsCheckbox(target) {
+            const cb = document.getElementById(target === 'renew' ? 'renew-terms-check' : 'purchase-terms-check');
+            if (!cb) return;
+            cb.addEventListener('change', function () {
+                _termsOk[target] = cb.checked;
+                const i = _payIntent[target];
+                setPaymentButtonState(target, i.enabled, i.price, i.oldPrice);
+            });
+        }
+        _wireTermsCheckbox('purchase');
+        _wireTermsCheckbox('renew');
 
         function updateThemeColor() {
             const meta = document.getElementById('dynamic-theme-color');
@@ -3741,11 +3767,11 @@
         function showSupportNotification() {
             try {
                 if (!('Notification' in window) || Notification.permission !== 'granted') return;
-                const n = new Notification('Поддержка Alma VPN', {
+                const n = new Notification('Поддержка SpectraSokol', {
                     body: 'Оператор ответил на ваше обращение',
-                    icon: '/module/ico/Alma-VPN-icon.png',
-                    badge: '/module/ico/Alma-VPN-icon.png',
-                    tag: 'alma-support-reply',
+                    icon: '/module/ico/SpectraSokol-VPN-icon.png',
+                    badge: '/module/ico/SpectraSokol-VPN-icon.png',
+                    tag: 'spectra-support-reply',
                     renotify: true
                 });
                 n.onclick = function () { try { window.focus(); } catch (e) {} try { n.close(); } catch (e) {} };
@@ -3864,7 +3890,7 @@
                         <div class="support-msg support-msg-staff support-msg-row">
                             ${showAvatar ? `
                                 <div class="support-msg-avatar">
-                                    <span class="material-icons-round text-[16px] text-cyan-200/80">support_agent</span>
+                                    <span class="material-icons-round text-[16px] text-purple-200/80">support_agent</span>
                                 </div>
                             ` : `<div class="w-8 shrink-0"></div>`}
                             <div class="support-msg-bubble">
@@ -3912,7 +3938,7 @@
                     const badge = document.getElementById('support-status-badge');
                     badge.classList.remove('hidden');
                     if (data.status === 'open') {
-                        badge.innerHTML = '<span class="text-[10px] bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded-full font-bold">🟢 Открыт</span>';
+                        badge.innerHTML = '<span class="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full font-bold">🟢 Открыт</span>';
                         document.getElementById('support-input-area').classList.remove('hidden');
                         document.getElementById('support-closed-area').classList.add('hidden');
                     } else {
@@ -4318,7 +4344,7 @@
 
         const goBackToMain = () => { window.location.hash = ''; };
 
-        // --- Setup wizard (AlmaVPN-style 3-step flow) ---
+        // --- Setup wizard (SpectraSokol-style 3-step flow) ---
         let setupWizardCfg = {};
         let setupWizardStep = 0;
         let setupWizardPlatform = 'ios';
@@ -4881,20 +4907,20 @@
             var st = document.createElement('style');
             st.id = 'contest-style';
             st.textContent =
-                '.contest-banner-btn{background:linear-gradient(120deg,#1fc6d8 0%,#3b82f6 52%,#6366f1 100%);border:1px solid rgba(255,255,255,.22);box-shadow:0 10px 26px rgba(37,120,216,.34),inset 0 1px 0 rgba(255,255,255,.2);}'
+                '.contest-banner-btn{background:linear-gradient(120deg,#a855f7 0%,#3b82f6 52%,#6366f1 100%);border:1px solid rgba(255,255,255,.22);box-shadow:0 10px 26px rgba(37,120,216,.34),inset 0 1px 0 rgba(255,255,255,.2);}'
               + '.contest-banner-ic{font-size:18px;color:#fff;flex-shrink:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.18);border-radius:10px;}'
               + '.contest-banner-sub{color:rgba(255,255,255,.9);}'
               + '.contest-banner-chev{color:rgba(255,255,255,.85);}'
               + '.contest-modal-back{position:fixed;inset:0;z-index:2147482000;background:rgba(4,6,12,.82);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;}'
-              + '.contest-modal{width:100%;max-width:480px;background:#0e1420;border:1px solid rgba(255,255,255,.08);border-radius:22px 22px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -20px 60px rgba(0,0,0,.5);max-height:88vh;overflow-y:auto;}'
+              + '.contest-modal{width:100%;max-width:480px;background:#130e22;border:1px solid rgba(255,255,255,.08);border-radius:22px 22px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -20px 60px rgba(0,0,0,.5);max-height:88vh;overflow-y:auto;}'
               + '.contest-modal h3{font-size:18px;font-weight:900;color:#fff;margin:0 0 4px;}'
               + '.contest-modal .cm-sub{font-size:12px;color:#94a3b8;margin:0 0 16px;}'
-              + '.contest-tickets{display:flex;align-items:center;gap:12px;background:linear-gradient(100deg,rgba(31,198,216,.12),rgba(99,102,241,.12));border:1px solid rgba(31,198,216,.32);border-radius:16px;padding:14px 16px;margin-bottom:16px;}'
-              + '.contest-tickets .n{font-size:30px;font-weight:900;color:#37d6da;line-height:1;}'
+              + '.contest-tickets{display:flex;align-items:center;gap:12px;background:linear-gradient(100deg,rgba(168, 85, 247,.12),rgba(99,102,241,.12));border:1px solid rgba(168, 85, 247,.32);border-radius:16px;padding:14px 16px;margin-bottom:16px;}'
+              + '.contest-tickets .n{font-size:30px;font-weight:900;color:#c084fc;line-height:1;}'
               + '.contest-tickets .lbl{font-size:13px;color:#e2e8f0;}'
               + '.contest-desc{font-size:13px;color:#cbd5e1;line-height:1.6;white-space:pre-wrap;margin-bottom:14px;}'
               + '.contest-prizes{font-size:14px;color:#e2e8f0;line-height:1.7;white-space:pre-wrap;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:12px 14px;margin-bottom:16px;}'
-              + '.contest-cta{width:100%;background:#1fc6d8;color:#04121a;font-weight:800;border:none;border-radius:14px;padding:14px;font-size:15px;margin-bottom:10px;cursor:pointer;}'
+              + '.contest-cta{width:100%;background:#a855f7;color:#130725;font-weight:800;border:none;border-radius:14px;padding:14px;font-size:15px;margin-bottom:10px;cursor:pointer;}'
               + '.contest-close{width:100%;background:transparent;color:#94a3b8;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px;font-size:14px;cursor:pointer;}';
             document.head.appendChild(st);
         }
@@ -5031,7 +5057,7 @@
         function _wheelConfetti() {
             var scene = document.querySelector('#wheel-overlay .wheel-scene'); if (!scene) return;
             var c = document.createElement('div'); c.className = 'ws-confetti';
-            var colors = ['#e02424', '#f2c534', '#35c6e8', '#3fa142', '#e0428c', '#ffffff'];
+            var colors = ['#e02424', '#f2c534', '#c084fc', '#3fa142', '#e0428c', '#ffffff'];
             var html = '';
             for (var i = 0; i < 70; i++) {
                 html += '<span style="left:' + (Math.random() * 100).toFixed(1) + '%;background:' + colors[i % colors.length]
@@ -5060,22 +5086,22 @@
               + '.ws-curtain{position:absolute;top:0;bottom:18%;width:14%;z-index:2;background:repeating-linear-gradient(90deg,#6f0a10 0px,#c4161f 9px,#8c1017 19px,#ad141c 28px);}'
               + '.ws-curtain-l{left:0;border-radius:0 0 55% 0/0 0 16% 0;box-shadow:inset -10px 0 16px rgba(0,0,0,.5);}'
               + '.ws-curtain-r{right:0;border-radius:0 0 0 55%/0 0 0 16%;box-shadow:inset 10px 0 16px rgba(0,0,0,.5);}'
-              + '.ws-valance{position:absolute;top:0;left:0;right:0;height:calc(24px + var(--alma-fs-top,0px));z-index:3;background:repeating-linear-gradient(90deg,#8c1017 0px,#c4161f 14px,#8c1017 28px);border-bottom:3px solid #e8c04a;box-shadow:0 6px 14px rgba(0,0,0,.45);}'
-              + '.wheel-x{position:absolute;top:calc(32px + var(--alma-fs-top,0px));right:12px;z-index:6;background:rgba(0,0,0,.4);color:#fff;border:1px solid rgba(255,255,255,.3);width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;}'
-              + '.wheel-sound{position:absolute;top:calc(32px + var(--alma-fs-top,0px));left:12px;z-index:6;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.3);width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;line-height:1;padding:0;}'
+              + '.ws-valance{position:absolute;top:0;left:0;right:0;height:calc(24px + var(--spectra-fs-top,0px));z-index:3;background:repeating-linear-gradient(90deg,#8c1017 0px,#c4161f 14px,#8c1017 28px);border-bottom:3px solid #e8c04a;box-shadow:0 6px 14px rgba(0,0,0,.45);}'
+              + '.wheel-x{position:absolute;top:calc(32px + var(--spectra-fs-top,0px));right:12px;z-index:6;background:rgba(0,0,0,.4);color:#fff;border:1px solid rgba(255,255,255,.3);width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;}'
+              + '.wheel-sound{position:absolute;top:calc(32px + var(--spectra-fs-top,0px));left:12px;z-index:6;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.3);width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;line-height:1;padding:0;}'
               + '.ws-confetti{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:hidden;}'
               + '.ws-confetti span{position:absolute;top:-14px;width:8px;height:13px;border-radius:2px;animation-name:wsFall;animation-timing-function:linear;animation-fill-mode:forwards;}'
               + '@keyframes wsFall{to{transform:translateY(115vh) rotate(720deg);}}'
               + '@keyframes wsWinPulse{0%{transform:scale(1)}35%{transform:scale(1.16)}100%{transform:scale(1)}}'
               + '.wheel-result.win{animation:wsWinPulse .6s ease;}'
-              + '.ws-sign{position:absolute;top:calc(6.5% + var(--alma-fs-top,0px));left:50%;transform:translateX(-50%) rotate(-2deg);z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;}'
+              + '.ws-sign{position:absolute;top:calc(6.5% + var(--spectra-fs-top,0px));left:50%;transform:translateX(-50%) rotate(-2deg);z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;}'
               + '.ws-sign-top{font-size:13px;font-weight:800;letter-spacing:.42em;color:#fff;text-shadow:0 0 8px rgba(255,255,255,.9),0 0 18px rgba(120,220,255,.8);}'
               + '.ws-sign-word{font-size:42px;font-weight:900;letter-spacing:.06em;color:#ff3b3b;line-height:1;padding:8px 20px 10px;border:3px solid #ffd84d;border-radius:10px;background:rgba(10,20,40,.25);text-shadow:0 0 6px rgba(255,60,60,.9),0 0 22px rgba(255,40,40,.65),0 2px 0 rgba(120,0,0,.6);box-shadow:0 0 14px rgba(255,216,77,.75),inset 0 0 10px rgba(255,216,77,.35);}'
-              + '.wheel-stage{position:absolute;top:calc(27% + var(--alma-fs-top,0px));left:50%;transform:translateX(-50%);width:min(88%,350px);aspect-ratio:1/1;z-index:3;}'
+              + '.wheel-stage{position:absolute;top:calc(27% + var(--spectra-fs-top,0px));left:50%;transform:translateX(-50%);width:min(88%,350px);aspect-ratio:1/1;z-index:3;}'
               + '.wheel-pointer{position:absolute;top:-7px;left:50%;transform:translateX(-50%);z-index:4;filter:drop-shadow(0 3px 5px rgba(0,0,0,.5));line-height:0;}'
               + '.wheel-wrap{width:100%;height:100%;filter:drop-shadow(0 14px 30px rgba(0,0,0,.55));}'
               + '.wheel-wrap svg{width:100%;height:100%;display:block;}'
-              + '.ws-card{position:absolute;left:14px;right:14px;bottom:calc(14px + var(--alma-fs-bottom,0px));z-index:5;background:#fff;border-radius:18px;padding:14px 16px;text-align:center;box-shadow:0 14px 34px rgba(0,0,0,.5);}'
+              + '.ws-card{position:absolute;left:14px;right:14px;bottom:calc(14px + var(--spectra-fs-bottom,0px));z-index:5;background:#fff;border-radius:18px;padding:14px 16px;text-align:center;box-shadow:0 14px 34px rgba(0,0,0,.5);}'
               + '.wheel-result{min-height:20px;text-align:center;color:#111826;font-weight:800;font-size:14.5px;line-height:1.35;}'
               + '.wheel-spin-btn{width:100%;margin-top:10px;background:linear-gradient(180deg,#e8442f 0%,#b31212 100%);color:#fff;font-weight:900;border:none;border-radius:14px;padding:14px;font-size:16px;cursor:pointer;transition:transform .15s;box-shadow:0 8px 18px rgba(217,43,43,.4);}'
               + '.wheel-spin-btn:active{transform:scale(.98);}.wheel-spin-btn.disabled{background:#94a3b8;box-shadow:none;cursor:default;}'
@@ -5154,7 +5180,7 @@
               + '<button class="wheel-x" id="wheel-x">✕</button>'
               + '<button class="wheel-sound" id="wheel-sound">🔊</button>'
               + '<div class="ws-sign"><span class="ws-sign-top">ИСПЫТАЙ</span><span class="ws-sign-word">УДАЧУ</span></div>'
-              + '<div class="wheel-stage"><div class="wheel-pointer"><svg width="44" height="38" viewBox="0 0 44 38"><path d="M6 4 H38 L22 34 Z" fill="#35c6e8" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg></div><div class="wheel-wrap">' + buildWheelSvg(data.prizes) + '</div></div>'
+              + '<div class="wheel-stage"><div class="wheel-pointer"><svg width="44" height="38" viewBox="0 0 44 38"><path d="M6 4 H38 L22 34 Z" fill="#c084fc" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg></div><div class="wheel-wrap">' + buildWheelSvg(data.prizes) + '</div></div>'
               + '<div class="ws-card">'
               + '<div class="wheel-result" id="wheel-result"></div>'
               + '<button class="wheel-spin-btn" id="wheel-spin-btn">Крутить</button>'
@@ -5320,8 +5346,8 @@
             // sessionStorage (тот же origin), отсюда и забираем как фолбэк — одноразово.
             try {
                 let _scr = new URLSearchParams(window.location.search).get('screen');
-                if (!_scr) { try { _scr = sessionStorage.getItem('almaScreen'); } catch (e) {} }
-                try { sessionStorage.removeItem('almaScreen'); } catch (e) {}
+                if (!_scr) { try { _scr = sessionStorage.getItem('spectraScreen'); } catch (e) {} }
+                try { sessionStorage.removeItem('spectraScreen'); } catch (e) {}
                 const _map = { home:'', main:'', keys:'', buy:'bay', renew:'rebay', rebay:'rebay',
                                profile:'pro', topup:'pro', support:'support', setup:'setup' };
                 if (_scr && Object.prototype.hasOwnProperty.call(_map, _scr)) {
@@ -5375,7 +5401,7 @@
             if (!mp) return;
             const b = document.createElement('div');
             b.id = 'active-promo-banner';
-            b.style.cssText = 'margin:8px 0 2px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,rgba(31,198,216,.18),rgba(31,198,216,.06));border:1px solid rgba(31,198,216,.35);display:flex;align-items:center;gap:8px;color:#bdeef5;font-size:12px;font-weight:700;line-height:1.25';
+            b.style.cssText = 'margin:8px 0 2px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,rgba(168, 85, 247,.18),rgba(168, 85, 247,.06));border:1px solid rgba(168, 85, 247,.35);display:flex;align-items:center;gap:8px;color:#e2ccfb;font-size:12px;font-weight:700;line-height:1.25';
             b.innerHTML = '<span style="font-size:15px">🎟</span><span>Скидка <b data-promo-label style="color:#5fe3f2">' + _activePromoLabel() + '</b> активна — применится при покупке (на 1 раз)</span>';
             mp.insertBefore(b, mp.firstChild);
         }
@@ -5665,9 +5691,9 @@
                     </button>
                 </div>
 
-                <div class="alma-payment-info bg-[#1a1f1d] rounded-[18px] border border-white/[0.05] overflow-hidden">
+                <div class="spectra-payment-info bg-[#1a1f1d] rounded-[18px] border border-white/[0.05] overflow-hidden">
                     <div id="confirm-plan-name" class="px-4 py-3.5 text-[14px] font-semibold text-white leading-snug border-b border-white/[0.06]">...</div>
-                    <div id="confirm-plan-details" class="px-4 py-3 text-[13px] text-cyan-100/75 font-medium">...</div>
+                    <div id="confirm-plan-details" class="px-4 py-3 text-[13px] text-purple-100/75 font-medium">...</div>
                 </div>
 
                 <button type="button" id="method-selector-btn" onclick="openMethodsList()"
@@ -5698,7 +5724,7 @@
                 </div>
 
                 <button type="button" id="final-pay-btn" onclick="processPayment()" disabled
-                    class="w-full alma-pay-modal-btn py-4 font-extrabold transition-all flex items-center justify-center gap-2 pointer-events-none">
+                    class="w-full spectra-pay-modal-btn py-4 font-extrabold transition-all flex items-center justify-center gap-2 pointer-events-none">
                     <span id="final-pay-btn-text">{{ common_payment_select_method_text }}</span>
                 </button>
             </div>
@@ -5770,13 +5796,13 @@
             <div id="payment-step-success"
                 class="p-5 pb-6 hidden flex-col items-center text-center gap-4 relative z-10">
                 <div
-                    class="absolute -top-16 left-1/2 -translate-x-1/2 w-40 h-40 bg-cyan-500/10 rounded-full blur-[60px] pointer-events-none">
+                    class="absolute -top-16 left-1/2 -translate-x-1/2 w-40 h-40 bg-purple-500/10 rounded-full blur-[60px] pointer-events-none">
                 </div>
 
                 <div class="relative mt-2 success-pop">
-                    <div class="absolute inset-[-8px] bg-cyan-500/20 blur-xl rounded-full"></div>
+                    <div class="absolute inset-[-8px] bg-purple-500/20 blur-xl rounded-full"></div>
                     <div
-                        class="w-16 h-16 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-2xl flex items-center justify-center shadow-[0_8px_30px_rgba(31,198,224,0.3)] relative z-10 rotate-3">
+                        class="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-[0_8px_30px_rgba(168,85,247,0.3)] relative z-10 rotate-3">
                         <span class="material-icons-round text-3xl text-white">check</span>
                     </div>
                 </div>
@@ -5790,7 +5816,7 @@
                     <div class="flex items-center justify-between">
                         <span class="text-[9px] text-gray-600 font-bold uppercase tracking-[0.15em]">Действует до</span>
                         <span id="success-expiry"
-                            class="text-[11px] text-cyan-400 font-bold bg-cyan-500/10 px-2.5 py-1 rounded-lg border border-cyan-500/10">...</span>
+                            class="text-[11px] text-purple-400 font-bold bg-purple-500/10 px-2.5 py-1 rounded-lg border border-purple-500/10">...</span>
                     </div>
 
                     <div class="space-y-1.5">
@@ -5885,8 +5911,8 @@
             },
             wallet: {
                 svg: '<path fill="currentColor" d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>',
-                color: 'text-cyan-400',
-                bg: 'bg-cyan-400/10'
+                color: 'text-purple-400',
+                bg: 'bg-purple-400/10'
             }
         };
 
@@ -6372,7 +6398,7 @@
 
             if (btn) {
                 btn.disabled = true;
-                btn.className = 'w-full alma-pay-modal-btn py-4 font-extrabold transition-all flex items-center justify-center gap-2 pointer-events-none';
+                btn.className = 'w-full spectra-pay-modal-btn py-4 font-extrabold transition-all flex items-center justify-center gap-2 pointer-events-none';
                 btn.innerHTML = `<span id="final-pay-btn-text">${TXT_PAYMENT_SELECT_METHOD}</span>`;
             }
             if (btnText) btnText.textContent = TXT_PAYMENT_SELECT_METHOD;
@@ -6455,14 +6481,14 @@
 
                 html += `
                 <button onclick="confirmMethod('${m.id}', '${m.name.replace(/'/g, "\\'")}', '${m.icon}')" 
-                    class="alma-payment-method-btn w-full p-3.5 flex items-center gap-3 active:scale-[0.99] transition-all group">
+                    class="spectra-payment-method-btn w-full p-3.5 flex items-center gap-3 active:scale-[0.99] transition-all group">
                     <div class="w-11 h-11 rounded-[14px] flex items-center justify-center transition-colors border border-white/[0.05] ${iconData.classes}">
                         ${iconData.html}
                     </div>
                     <div class="text-left flex-1">
                         <div class="text-[15px] font-bold text-gray-100 group-hover:text-white transition-colors leading-tight">${m.name}</div>
                     </div>
-                    ${isSelected ? '<span class="material-icons-round text-[#1ec8e2] text-[22px]">check_circle</span>' : '<span class="w-6"></span>'}
+                    ${isSelected ? '<span class="material-icons-round text-[#a855f7] text-[22px]">check_circle</span>' : '<span class="w-6"></span>'}
                 </button>`;
             });
             html += '</div>';
@@ -6491,7 +6517,7 @@
             const btn = document.getElementById('final-pay-btn');
             if (btn) {
                 btn.disabled = false;
-                btn.className = 'w-full alma-pay-modal-btn py-4 font-extrabold active:scale-[0.98] transition-all flex items-center justify-center gap-2';
+                btn.className = 'w-full spectra-pay-modal-btn py-4 font-extrabold active:scale-[0.98] transition-all flex items-center justify-center gap-2';
                 btn.innerHTML = `<span>${TXT_PAYMENT_PAY_PREFIX} ${(currentPaymentData?.price || 0)} ₽</span>`;
             }
 
@@ -6778,11 +6804,11 @@
                         const original = icon.textContent;
                         icon.textContent = 'check';
                         // Optional: visual feedback color
-                        btn.classList.add('text-cyan-500');
+                        btn.classList.add('text-purple-500');
 
                         setTimeout(() => {
                             icon.textContent = original;
-                            btn.classList.remove('text-cyan-500');
+                            btn.classList.remove('text-purple-500');
                         }, 2000);
                     }
                     window.Telegram?.WebApp?.showAlert('Ссылка скопирована!');
@@ -7571,7 +7597,7 @@
           n = Math.max(0, days); unit = daysWord(n);
           state = days <= 0 ? 'expired' : 'active';
         }
-        var color = state === 'expired' ? '#f87171' : (state === 'soon' ? '#f5b945' : '#1fc6d8');
+        var color = state === 'expired' ? '#f87171' : (state === 'soon' ? '#f5b945' : '#a855f7');
         var pct;
         if (state === 'expired') pct = 0.0001;
         else if (isHours) pct = Math.max(0.05, Math.min(1, n / 24));
@@ -7610,7 +7636,7 @@
       } catch (e) {}
       var mq = window.matchMedia('(min-width:1024px)');
       (mq.addEventListener ? mq.addEventListener('change', run) : mq.addListener && mq.addListener(run));
-      window.__almaEnhance = run;
+      window.__spectraEnhance = run;
     })();
     </script>
 </body>

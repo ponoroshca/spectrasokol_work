@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN=true
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential python3-dev \
+    && apt-get install -y --no-install-recommends build-essential python3-dev ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # Создаём venv и ставим зависимости в него

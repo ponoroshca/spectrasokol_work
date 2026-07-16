@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Медленное утро — заметки о чае, книгах и неспешной жизни</title>
+<meta name="description" content="Личный блог о чае, книгах, домашнем уюте и умении замедляться. Короткие заметки по утрам за чашкой чая.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B5%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#faf6ef; --card:#fffdf9; --ink:#2f2a24; --soft:#6f6559; --line:#eadfce;
+  --sage:#7d9b76; --sage-d:#5f7d58; --clay:#c07a52; --cream:#f3ecdf;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:Georgia,"Times New Roman",serif;background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+.sans{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--sage-d);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:860px;margin:0 auto;padding:0 22px}
+
+header{border-bottom:1px solid var(--line);background:var(--card)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:74px}
+.logo{display:flex;align-items:center;gap:11px;font-size:22px;font-weight:700;letter-spacing:.2px}
+.logo .mark{width:38px;height:38px;border-radius:50%;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px}
+.menu{display:flex;gap:22px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px}
+.menu a{color:var(--soft)}
+.menu a:hover{color:var(--ink);text-decoration:none}
+
+.hero{padding:64px 0 40px;text-align:center}
+.hero .kicker{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--clay);font-weight:600;margin-bottom:14px}
+.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.2;margin-bottom:16px}
+.hero p{font-size:18px;color:var(--soft);max-width:560px;margin:0 auto}
+
+.feature{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px;margin:16px 0 40px;display:grid;grid-template-columns:150px 1fr;gap:26px;align-items:center}
+.feature .thumb{width:150px;height:150px;border-radius:14px;background:linear-gradient(135deg,#e9efe4,#dfe8d6);display:flex;align-items:center;justify-content:center;font-size:60px}
+.feature .meta{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:13px;color:var(--clay);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+.feature h2{font-size:26px;line-height:1.25;margin-bottom:10px}
+.feature p{color:var(--soft);font-size:16px}
+.feature .read{display:inline-block;margin-top:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;font-weight:600}
+
+.section-title{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--soft);border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:26px}
+
+.posts{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.post{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:transform .15s,box-shadow .2s}
+.post:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(120,100,70,.1)}
+.post .cover{height:150px;display:flex;align-items:center;justify-content:center;font-size:52px}
+.c1{background:linear-gradient(135deg,#f2e4d3,#ecd8c0)}
+.c2{background:linear-gradient(135deg,#e5ede0,#d7e6cf)}
+.c3{background:linear-gradient(135deg,#eee6f0,#e4d8e8)}
+.c4{background:linear-gradient(135deg,#e9efe4,#d9e7ea)}
+.post .body{padding:20px 22px}
+.post .date{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:13px;color:var(--clay);margin-bottom:8px}
+.post h3{font-size:20px;line-height:1.3;margin-bottom:8px}
+.post p{color:var(--soft);font-size:15px}
+
+.about{background:var(--cream);border-radius:20px;padding:40px 34px;margin:48px 0;display:grid;grid-template-columns:110px 1fr;gap:28px;align-items:center}
+.about .ava{width:110px;height:110px;border-radius:50%;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-size:44px}
+.about h2{font-size:26px;margin-bottom:10px}
+.about p{color:var(--soft);font-size:16px}
+
+.news{text-align:center;padding:48px 24px;background:var(--card);border:1px solid var(--line);border-radius:20px;margin-bottom:48px}
+.news h2{font-size:26px;margin-bottom:10px}
+.news p{color:var(--soft);margin-bottom:22px}
+.news form{display:flex;gap:10px;max-width:440px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+.news input{flex:1;min-width:200px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;padding:13px 16px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+.news button{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;padding:13px 24px;border:none;border-radius:12px;background:var(--sage);color:#fff;cursor:pointer}
+.news button:hover{background:var(--sage-d)}
+.news small{display:block;margin-top:12px;color:var(--soft);font-size:13px}
+
+footer{border-top:1px solid var(--line);background:var(--card);padding:34px 0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.foot{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between;font-size:14px;color:var(--soft)}
+.foot .logo{font-size:18px}
+.foot a{color:var(--soft)}
+
+@media(max-width:680px){
+  .menu{display:none}
+  .feature{grid-template-columns:1fr;text-align:center}
+  .feature .thumb{width:100%;height:120px;font-size:52px}
+  .posts{grid-template-columns:1fr}
+  .about{grid-template-columns:1fr;text-align:center;justify-items:center}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="logo"><span class="mark">🍵</span>Медленное утро</div>
+    <nav class="menu">
+      <a href="#posts">Заметки</a>
+      <a href="#about">Об авторе</a>
+      <a href="#news">Рассылка</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="kicker">Личный блог</div>
+    <h1>Заметки о чае, книгах<br>и умении замедляться</h1>
+    <p>Короткие записи по утрам — за чашкой чая, у окна, пока город ещё не проснулся. О книгах, домашнем уюте и маленьких радостях неспешной жизни.</p>
+  </section>
+
+  <article class="feature">
+    <div class="thumb">📖</div>
+    <div>
+      <div class="meta">Избранное · Чтение</div>
+      <h2>Как я вернула привычку читать по утрам</h2>
+      <p>Полгода назад я поставила чайник, отложила телефон в другую комнату и открыла книгу. Оказалось, двадцати минут тишины достаточно, чтобы весь день ощущался иначе. Рассказываю, что помогло и какие книги сопровождали меня этой осенью.</p>
+      <a class="read" href="#posts">Читать заметку →</a>
+    </div>
+  </article>
+
+  <section id="posts">
+    <div class="section-title">Последние заметки</div>
+    <div class="posts">
+      <article class="post">
+        <div class="cover c1">🫖</div>
+        <div class="body">
+          <div class="date">12 июля</div>
+          <h3>Пять сортов чая на прохладную осень</h3>
+          <p>От дымного лапсанга до мягкого улуна — чем я согреваюсь, когда за окном серо и хочется тепла.</p>
+        </div>
+      </article>
+      <article class="post">
+        <div class="cover c2">🪴</div>
+        <div class="body">
+          <div class="date">6 июля</div>
+          <h3>Растения, которые прощают забывчивость</h3>
+          <p>Небольшой список неприхотливых зелёных соседей для тех, кто любит уют, но часто уезжает.</p>
+        </div>
+      </article>
+      <article class="post">
+        <div class="cover c3">✍️</div>
+        <div class="body">
+          <div class="date">28 июня</div>
+          <h3>Утренние страницы: месяц спустя</h3>
+          <p>Три листа от руки каждое утро. Делюсь тем, что изменилось, и почему я не бросила на второй неделе.</p>
+        </div>
+      </article>
+      <article class="post">
+        <div class="cover c4">🌿</div>
+        <div class="body">
+          <div class="date">19 июня</div>
+          <h3>Тихие выходные без планов</h3>
+          <p>Как перестать заполнять субботу делами и наконец разрешить себе просто ничего не успевать.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="about" class="about">
+    <div class="ava">А</div>
+    <div>
+      <h2>Об авторе</h2>
+      <p>Меня зовут Аня. Днём я редактор, а по утрам — просто человек с чашкой чая и блокнотом. Этот блог — мой способ замечать хорошее в обычных днях и делиться маленькими находками: книгами, рецептами, привычками, которые делают жизнь чуть спокойнее.</p>
+    </div>
+  </section>
+
+  <section id="news" class="news">
+    <h2>Письмо по воскресеньям</h2>
+    <p>Раз в неделю — одна тёплая заметка, список книг и пара мыслей на неделю. Без спама.</p>
+    <form onsubmit="event.preventDefault();this.querySelector('button').textContent='Спасибо!';">
+      <input type="email" placeholder="Ваш email" aria-label="Email">
+      <button type="submit">Подписаться</button>
+    </form>
+    <small>Отписаться можно в любой момент одним кликом.</small>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div class="logo"><span class="mark" style="width:30px;height:30px;font-size:16px">🍵</span>Медленное утро</div>
+    <div>© 2026 Медленное утро · Личный блог</div>
+  </div>
+</footer>
+</body>
+</html>

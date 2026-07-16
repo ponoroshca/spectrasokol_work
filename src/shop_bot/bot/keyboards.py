@@ -136,7 +136,12 @@ def create_app_entry_keyboard(is_admin: bool = False) -> InlineKeyboardMarkup:
     if _wurl:
         sep = "&" if "?" in _wurl else "?"
         builder.button(text=_setting_button_text("btn_open_app", "📲 Открыть приложение"), web_app=WebAppInfo(url=_wurl))
-        builder.button(text=_setting_button_text("btn_support", "🆘 Поддержка"), web_app=WebAppInfo(url=f"{_wurl}{sep}screen=support"))
+        # Поддержка в чате бота — прямая ссылка на саппорт-бота (раздел в веб-аппе остаётся отдельно)
+        _support_uname = (get_setting("support_bot_username") or "").strip().lstrip("@")
+        if _support_uname:
+            builder.button(text=_setting_button_text("btn_support", "🆘 Поддержка"), url=f"https://t.me/{_support_uname}")
+        else:
+            builder.button(text=_setting_button_text("btn_support", "🆘 Поддержка"), web_app=WebAppInfo(url=f"{_wurl}{sep}screen=support"))
         rows += [1, 1]
     else:
         builder.button(text=_setting_button_text("btn_support", "🆘 Поддержка"), callback_data="show_help")
@@ -1264,8 +1269,8 @@ def create_back_to_profile_keyboard() -> InlineKeyboardMarkup:
 
 def create_gift_bonus_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    channel = (get_setting("channel_url") or "https://t.me/Info_Alma").strip()
-    support = (get_setting("support_bot_username") or "VPN_Alma_Support_bot").strip().lstrip("@")
+    channel = (get_setting("channel_url") or "https://t.me/SpectraSokol").strip()
+    support = (get_setting("support_bot_username") or "SpectraSokol_Support_bot").strip().lstrip("@")
     if not channel.startswith("http"):
         channel = f"https://t.me/{channel.lstrip('@')}"
     builder.button(text="✅ Подписаться на канал", url=channel)
@@ -1278,7 +1283,7 @@ def create_gift_bonus_keyboard() -> InlineKeyboardMarkup:
 
 def create_referral_keyboard(referral_link: str) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    support = (get_setting("support_bot_username") or "VPN_Alma_Support_bot").strip().lstrip("@")
+    support = (get_setting("support_bot_username") or "SpectraSokol_Support_bot").strip().lstrip("@")
     min_withdraw = (get_setting("referral_min_withdrawal") or "1500").strip()
 
     share_text = (

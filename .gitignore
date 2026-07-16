@@ -44,3 +44,8 @@ deploy/
 
 # Загрузки веб-чата поддержки (рантайм)
 src/shop_bot/webapp/module/support-media/
+
+# session backups / notes (не в git)
+*.bak-*
+*.bak.*
+NEW-CHAT-PROMPT.txt

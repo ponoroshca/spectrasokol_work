@@ -1,6 +1,6 @@
 /*
- * Alma VPN — PWA service worker (минимальный).
- * Назначение: сделать кабинет app.almapluse.ru устанавливаемым как отдельное
+ * SpectraSokol — PWA service worker (минимальный).
+ * Назначение: сделать кабинет vpn-vless.ru устанавливаемым как отдельное
  * приложение (standalone). Chrome/Android требует зарегистрированный SW с
  * обработчиком fetch — поэтому он здесь есть, но НАМЕРЕННО passthrough:
  * НИЧЕГО не кэшируем (особенно HTML), чтобы деплой app.html/login.html через

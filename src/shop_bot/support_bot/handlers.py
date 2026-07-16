@@ -646,7 +646,7 @@ def get_support_router() -> Router:
         for it in _get_faq_items():
             b.button(text="▶️ " + it["title"], url=it["url"])
         b.adjust(1)
-        channel = (get_setting("channel_url") or "https://t.me/Info_Alma").strip()
+        channel = (get_setting("channel_url") or "https://t.me/SpectraSokol").strip()
         if not channel.startswith("http"):
             channel = "https://t.me/" + channel.lstrip("@")
         b.row(InlineKeyboardButton(text="🎥 Все видео инструкции", url=channel))
@@ -670,7 +670,7 @@ def get_support_router() -> Router:
             return
 
         support_text = get_setting("support_text") or (
-            "<b>👨‍💻 Поддержка Alma</b>\n\n"
+            "<b>👨‍💻 Поддержка SpectraSokol</b>\n\n"
             "• <b>✍️ Новое обращение</b> — создать тикет\n"
             "• Напишите в чат — дополните открытый тикет\n"
             "• <b>📨 Мои обращения</b> — история и закрытие"
@@ -755,7 +755,7 @@ def get_support_router() -> Router:
         await callback.answer("✅ Создание обращения отменено.")
         
         support_text = get_setting("support_text") or (
-            "<b>👨‍💻 Поддержка Alma</b>\n\n"
+            "<b>👨‍💻 Поддержка SpectraSokol</b>\n\n"
             "• <b>✍️ Новое обращение</b> — создать тикет\n"
             "• Напишите в чат — дополните открытый тикет\n"
             "• <b>📨 Мои обращения</b> — история и закрытие"

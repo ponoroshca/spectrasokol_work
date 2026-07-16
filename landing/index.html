@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpectraSokol — быстрый и приватный интернет</title>
+<meta name="description" content="Личный сервер для быстрого и защищённого интернета: до 1 Гбит/с, все устройства, оплата картой. Доступ в личном кабинете за 2 минуты.">
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="apple-touch-icon" href="/logo.png">
+<meta property="og:title" content="SpectraSokol — быстрый и приватный интернет">
+<meta property="og:description" content="Быстрое защищённое соединение, все устройства, оплата картой. Доступ в личном кабинете за 2 минуты.">
+<meta property="og:url" content="https://spectrasokol.online/">
+<meta property="og:image" content="https://spectrasokol.online/logo.png">
+<style>
+:root{
+  --bg:#080511; --bg2:#0d0820;
+  --card:rgba(28,18,48,.55); --card2:rgba(22,14,36,.7);
+  --line:rgba(168,85,247,.16); --line2:rgba(168,85,247,.32);
+  --pink:#ff3d8d; --purple:#a855f7; --purple2:#9333ea; --blue:#5b6cff;
+  --text:#f5f0ff; --muted:rgba(214,196,255,.62); --link:#c9a6ff;
+  --maxw:1120px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 20px}
+.glow{position:fixed;pointer-events:none;z-index:0;border-radius:50%;filter:blur(130px);opacity:.18}
+.glow-1{top:-24vmax;left:-14vmax;width:60vmax;height:60vmax;background:var(--purple)}
+.glow-2{bottom:-30vmax;right:-18vmax;width:62vmax;height:62vmax;background:var(--blue)}
+.rel{position:relative;z-index:1}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-weight:800;font-size:16px;border-radius:16px;padding:16px 26px;transition:transform .15s,box-shadow .2s,background .2s;cursor:pointer;border:none;white-space:nowrap}
+.btn:active{transform:scale(.98)}
+.btn-primary{color:#fff;background:linear-gradient(92deg,var(--purple2),var(--purple));box-shadow:0 10px 34px rgba(168,85,247,.38)}
+.btn-primary:hover{box-shadow:0 12px 44px rgba(168,85,247,.55)}
+.btn-ghost{color:var(--text);border:1px solid var(--line2);background:var(--card2)}
+.btn-ghost:hover{background:rgba(168,85,247,.14)}
+.btn-lg{padding:18px 30px;font-size:17px;border-radius:18px}
+
+/* header */
+header{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:rgba(8,5,17,.55);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;letter-spacing:.2px}
+.brand img{width:38px;height:38px;border-radius:11px;box-shadow:0 0 22px rgba(168,85,247,.45)}
+.brand b{color:var(--purple)}
+.nav-cta{font-size:14px;font-weight:700;padding:10px 18px;border-radius:12px;border:1px solid var(--line2);background:rgba(168,85,247,.1);transition:.2s}
+.nav-cta:hover{background:rgba(168,85,247,.22)}
+
+/* hero */
+.hero{padding:40px 0 20px;text-align:center}
+.orbit{position:relative;width:min(560px,92vw);aspect-ratio:1/1;margin:0 auto}
+.ring{position:absolute;border-radius:50%;border:1px solid rgba(168,85,247,.14);top:50%;left:50%;transform:translate(-50%,-50%)}
+.r1{width:98%;height:98%}.r2{width:74%;height:74%}.r3{width:50%;height:50%}.r4{width:27%;height:27%;border-color:rgba(168,85,247,.22)}
+.orbit-logo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:clamp(96px,22vw,150px);height:auto;border-radius:26px;box-shadow:0 0 56px rgba(168,85,247,.5),0 14px 44px rgba(0,0,0,.6);z-index:3}
+.pill{position:absolute;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:7px;background:rgba(28,18,48,.82);border:1px solid var(--line2);border-radius:999px;padding:7px 13px;font-size:clamp(11px,2.4vw,13px);font-weight:600;white-space:nowrap;backdrop-filter:blur(6px);z-index:2}
+.pill span{font-size:1.15em}
+.p1{top:15%;left:30%}.p2{top:9%;left:62%}.p3{top:34%;left:85%}.p4{top:66%;left:86%}
+.p5{top:90%;left:60%}.p6{top:88%;left:26%}.p7{top:63%;left:12%}.p8{top:32%;left:13%}
+.online{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-size:14px;color:var(--muted);font-weight:600}
+.online i{width:9px;height:9px;border-radius:50%;background:#39d98a;box-shadow:0 0 10px #39d98a;animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* marquee */
+.marquee{overflow:hidden;white-space:nowrap;margin:22px 0 6px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.marquee-track{display:inline-block;animation:scroll 32s linear infinite;font-size:13px;color:var(--muted);font-weight:600}
+.marquee-track span{color:var(--purple);margin:0 6px}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* hero CTA card */
+.hero-card{max-width:520px;margin:26px auto 0;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
+.hero-card-head{display:flex;align-items:center;gap:13px;text-align:left;margin-bottom:16px}
+.hero-card-ico{width:46px;height:46px;border-radius:14px;background:rgba(168,85,247,.15);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}
+.hero-card-head b{display:block;font-size:16px}
+.hero-card-head small{color:var(--muted);font-size:13px;font-weight:500}
+.hero-card .btn{width:100%;justify-content:space-between;margin-bottom:10px}
+.hero-card .btn:last-child{margin-bottom:0}
+.hero-note{margin-top:14px;font-size:13px;color:var(--muted)}
+.hero-note b{color:var(--text)}
+
+/* sections */
+section{padding:56px 0;position:relative;z-index:1}
+.eyebrow{font-size:12.5px;font-weight:800;letter-spacing:2px;color:var(--purple);text-transform:uppercase;margin-bottom:10px}
+h2{font-size:clamp(26px,4vw,40px);font-weight:900;letter-spacing:-.6px;line-height:1.12}
+.sec-lead{color:var(--muted);font-size:16px;margin-top:12px;max-width:620px}
+.center{text-align:center}
+.center .sec-lead{margin-left:auto;margin-right:auto}
+.grad{background:linear-gradient(92deg,var(--pink),var(--purple) 50%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px;counter-reset:s}
+.step{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 22px}
+.step::before{counter-increment:s;content:counter(s);display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:14px;font-weight:900;font-size:20px;color:#fff;background:linear-gradient(135deg,var(--purple2),var(--blue));margin-bottom:16px}
+.step h3{font-size:17px;font-weight:800;margin-bottom:7px}
+.step p{font-size:14px;color:var(--muted)}
+
+/* pricing */
+.price-wrap{max-width:820px;margin:34px auto 0;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:26px}
+.dev-row{display:flex;align-items:center;gap:14px;background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:18px}
+.dev-badge{width:42px;height:42px;border-radius:12px;background:rgba(168,85,247,.15);color:var(--purple);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;flex:none}
+.dev-row b{font-size:15px}.dev-row small{display:block;color:var(--muted);font-size:12px;font-weight:500}
+.dev-pills{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+.dev-pills button{background:var(--card2);border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s}
+.dev-pills button.on{background:rgba(168,85,247,.18);border-color:var(--line2);color:var(--text)}
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.plan{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:16px 14px;text-align:center;position:relative;transition:.15s}
+.plan.hot{border:2px solid var(--purple);box-shadow:0 0 34px rgba(168,85,247,.16)}
+.plan .tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:800;color:#fff;white-space:nowrap;background:linear-gradient(92deg,var(--pink),var(--purple));border-radius:999px;padding:3px 12px}
+.plan .per{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:6px}
+.plan .price{font-size:26px;font-weight:900}
+.plan .permo{font-size:12px;color:var(--muted);margin-top:3px}
+.plan .save{font-size:12px;font-weight:800;color:#7ef7c2;margin-top:8px}
+.price-cta{margin-top:22px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.price-cta .btn{width:100%;max-width:420px}
+.price-note{font-size:12.5px;color:var(--muted);text-align:center}
+.price-note a{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 18px;text-align:center}
+.stat b{display:block;font-size:clamp(24px,4vw,32px);font-weight:900;background:linear-gradient(92deg,var(--pink),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat span{font-size:13px;color:var(--muted);margin-top:4px;display:block}
+
+/* benefits */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px}
+.card .ico{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;background:linear-gradient(135deg,rgba(255,61,141,.18),rgba(91,108,255,.18));border:1px solid var(--line2)}
+.card h3{font-size:17px;font-weight:800;margin-bottom:7px}
+.card p{font-size:14px;color:var(--muted)}
+
+/* faq */
+.faq{max-width:760px;margin:34px auto 0}
+details{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 22px;margin-bottom:12px}
+summary{font-weight:800;font-size:16px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:14px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:22px;color:var(--purple);font-weight:400;flex:none}
+details[open] summary::after{content:"–"}
+details p{margin-top:12px;font-size:14.5px;color:var(--muted)}
+
+/* final */
+.final{max-width:var(--maxw);margin:0 auto;text-align:center;border-radius:28px;padding:56px 24px;background:linear-gradient(135deg,rgba(147,51,234,.22),rgba(91,108,255,.15));border:1px solid var(--line2)}
+.final h2{margin-bottom:10px}
+.final p{color:var(--muted);margin-bottom:26px;font-size:16px}
+.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* footer */
+footer{padding:40px 0;border-top:1px solid var(--line);margin-top:20px}
+.foot{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between;font-size:13.5px;color:var(--muted)}
+.foot a{color:var(--muted)}.foot a:hover{color:var(--text)}
+.foot-links{display:flex;gap:8px 16px;flex-wrap:wrap}
+
+@media(max-width:820px){
+  .steps{grid-template-columns:1fr}
+  .plans{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .grid3{grid-template-columns:1fr}
+  section{padding:44px 0}
+  .price-wrap{padding:18px}
+  .dev-pills{width:100%;margin-left:0;justify-content:flex-start;margin-top:4px}
+  .dev-row{flex-wrap:wrap}
+}
+@media(max-width:420px){
+  .btn{font-size:15px;padding:15px 20px}
+  .plan .price{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand"><img src="/logo.png" alt="SpectraSokol"><span>Spectra<b>Sokol</b></span></div>
+    <a class="nav-cta" href="https://app.vpn-vless.ru/">Личный кабинет</a>
+  </div>
+</header>
+
+<section class="hero rel">
+  <div class="wrap">
+    <div class="orbit">
+      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div>
+      <img class="orbit-logo" src="/logo.png" alt="SpectraSokol">
+      <div class="pill p1"><span>🇺🇸</span>США</div>
+      <div class="pill p2"><span>🇩🇪</span>Германия</div>
+      <div class="pill p3"><span>🇳🇱</span>Нидерланды</div>
+      <div class="pill p4"><span>🇪🇪</span>Эстония</div>
+      <div class="pill p5"><span>🇫🇷</span>Франция</div>
+      <div class="pill p6"><span>🇷🇺</span>Россия</div>
+      <div class="pill p7"><span>🏳️</span>Белые списки</div>
+      <div class="pill p8"><span>🇫🇮</span>Финляндия</div>
+    </div>
+    <div class="online"><i></i>Сервис работает — подключаются прямо сейчас</div>
+
+    <div class="marquee"><div class="marquee-track">
+      Доступ к любым ресурсам <span>•</span> Работает в любой сети <span>•</span> Скорость до 1 Гбит/с <span>•</span> Без ограничений трафика <span>•</span> Все устройства <span>•</span> Стабильное соединение <span>•</span> Защита данных <span>•</span> Поддержка 24/7 <span>•</span>
+      Доступ к любым ресурсам <span>•</span> Работает в любой сети <span>•</span> Скорость до 1 Гбит/с <span>•</span> Без ограничений трафика <span>•</span> Все устройства <span>•</span> Стабильное соединение <span>•</span> Защита данных <span>•</span> Поддержка 24/7 <span>•</span>
+    </div></div>
+
+    <div class="hero-card">
+      <div class="hero-card-head">
+        <div class="hero-card-ico">💻</div>
+        <div><b>iOS, Android, TV, ПК</b><small>Подключайте все свои устройства</small></div>
+      </div>
+      <a class="btn btn-primary btn-lg" href="https://app.vpn-vless.ru/"><span>Открыть личный кабинет</span><span>→</span></a>
+      <a class="btn btn-ghost btn-lg" href="#prices"><span>Смотреть тарифы</span><span>↓</span></a>
+      <div class="hero-note">Есть <b>бесплатный пробный период</b> — карта не нужна</div>
+    </div>
+  </div>
+</section>
+
+<section class="rel">
+  <div class="wrap center">
+    <div class="eyebrow">Подключение</div>
+    <h2>3 шага до запуска</h2>
+    <div class="steps" style="text-align:left">
+      <div class="step"><h3>Оформите доступ</h3><p>Выберите тариф в личном кабинете и оплатите картой или через СБП. Доступ открывается мгновенно.</p></div>
+      <div class="step"><h3>Войдите в кабинет</h3><p>Личный кабинет — обычный сайт. Открывается в любом браузере, ничего устанавливать и включать не нужно.</p></div>
+      <div class="step"><h3>Подключайтесь</h3><p>iOS, Android, Windows, macOS, Linux. Мастер настройки проведёт по шагам — готово за 2 минуты.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="prices" class="rel">
+  <div class="wrap center">
+    <div class="eyebrow">Тарифы</div>
+    <h2>Выберите тариф</h2>
+    <p class="sec-lead">Цена зависит от числа устройств. Чем дольше срок — тем выгоднее: скидка до 35%.</p>
+    <div class="price-wrap">
+      <div class="dev-row">
+        <div class="dev-badge" id="dev-count">2</div>
+        <div><b>Устройства</b><small>Одновременно в подписке</small></div>
+        <div class="dev-pills" id="dev-pills">
+          <button class="on" data-d="2">2</button>
+          <button data-d="5">5</button>
+          <button data-d="6">6</button>
+          <button data-d="8">8</button>
+          <button data-d="10">10</button>
+        </div>
+      </div>
+      <div class="plans" id="plans"></div>
+      <div class="price-cta">
+        <a class="btn btn-primary btn-lg" href="https://app.vpn-vless.ru/">Оформить в личном кабинете</a>
+        <div class="price-note">Не уверены? Возьмите <b style="color:var(--text)">бесплатный пробный доступ</b> — оформляется в кабинете в один клик, карта не нужна.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="rel">
+  <div class="wrap center">
+    <div class="eyebrow">Гарантия</div>
+    <h2>Стабильная работа</h2>
+    <div class="stats">
+      <div class="stat"><b>&lt; 50 мс</b><span>задержка до серверов</span></div>
+      <div class="stat"><b>до 1 Гбит/с</b><span>скорость канала</span></div>
+      <div class="stat"><b>99.9%</b><span>доступность</span></div>
+      <div class="stat"><b>24/7</b><span>поддержка</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="rel">
+  <div class="wrap center">
+    <div class="eyebrow">Преимущества</div>
+    <h2>Почему <span class="grad">SpectraSokol</span></h2>
+    <p class="sec-lead">Быстро, надёжно и без лишних сложностей — всё, что нужно для свободного интернета.</p>
+    <div class="grid3" style="text-align:left">
+      <div class="card"><div class="ico">⚡</div><h3>Работает сразу</h3><p>Никаких технических знаний. Оформил — подключился за 2 минуты по готовой инструкции.</p></div>
+      <div class="card"><div class="ico">🚀</div><h3>Скорость без компромиссов</h3><p>Выделенные каналы без перегрузок. Видео в 4K, звонки и игры — без буферизации.</p></div>
+      <div class="card"><div class="ico">🌍</div><h3>Локации в один клик</h3><p>США, Германия, Нидерланды, Эстония, Франция и другие. Меняйте локацию мгновенно.</p></div>
+      <div class="card"><div class="ico">📱</div><h3>Весь дом на одной подписке</h3><p>Телефон, ноутбук, Smart TV, планшет — до 10 устройств без доплат.</p></div>
+      <div class="card"><div class="ico">🔒</div><h3>Трафик под защитой</h3><p>Современное шифрование. Ни провайдер, ни публичный Wi-Fi не видят ваши данные.</p></div>
+      <div class="card"><div class="ico">💳</div><h3>Оплата как удобно</h3><p>Банковская карта, СБП или криптовалюта. Никаких автосписаний без вашего ведома.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="rel">
+  <div class="wrap center">
+    <div class="eyebrow">Вопросы</div>
+    <h2>Частые вопросы</h2>
+    <div class="faq" style="text-align:left">
+      <details><summary>Смогу ли я зайти в кабинет при проблемах с доступом?</summary><p>Да. Личный кабинет — обычный сайт: открывается в любом браузере и из любой сети, ничего дополнительно включать не нужно. Оплата и настройка доступны всегда.</p></details>
+      <details><summary>Это сложно настроить?</summary><p>Нет. После оплаты кабинет проведёт вас по шагам: скачать приложение → нажать кнопку → готово. В среднем 2 минуты.</p></details>
+      <details><summary>Сколько устройств можно подключить?</summary><p>От 2 до 10 устройств на одной подписке — выбираете при оформлении. Подписку можно расширить в любой момент.</p></details>
+      <details><summary>Какие устройства поддерживаются?</summary><p>iOS, Android, Windows, macOS, Linux, а также Smart TV. Мастер настройки сам подберёт приложение под ваше устройство.</p></details>
+      <details><summary>Есть ли пробный период?</summary><p>Да, бесплатный пробный доступ выдаётся в кабинете в один клик — банковская карта не нужна.</p></details>
+      <details><summary>Как оплатить?</summary><p>Банковской картой, через СБП или криптовалютой — как вам удобнее.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="rel">
+  <div class="final">
+    <h2>Быстрый интернет — <span class="grad">за две минуты</span></h2>
+    <p>Оформляете в кабинете — доступ открывается мгновенно. Подключаетесь на любом устройстве прямо сейчас.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary btn-lg" href="https://app.vpn-vless.ru/">Открыть личный кабинет</a>
+      <a class="btn btn-ghost btn-lg" href="#prices">Смотреть тарифы</a>
+    </div>
+  </div>
+</section>
+
+<footer class="rel">
+  <div class="wrap foot">
+    <div class="brand"><img src="/logo.png" alt="" style="width:30px;height:30px;border-radius:9px"><span>Spectra<b>Sokol</b></span></div>
+    <div class="foot-links">
+      <a href="https://teletype.in/@spectrasokol/7KqBCZUPDAX">Условия использования</a><span>·</span>
+      <a href="https://teletype.in/@spectrasokol/S-GEwiM8CIE">Политика конфиденциальности</a><span>·</span>
+      <a href="https://app.vpn-vless.ru/">Личный кабинет</a>
+    </div>
+  </div>
+  <div class="wrap" style="margin-top:16px;font-size:12.5px;color:var(--muted)">© 2026 SpectraSokol. Все права защищены.</div>
+</footer>
+
+<script>
+(function(){
+  var MATRIX={
+    2:{1:139,3:354,6:626,12:1084},
+    5:{1:190,3:484,6:855,12:1482},
+    6:{1:210,3:535,6:945,12:1638},
+    8:{1:250,3:629,6:1099,12:1899},
+    10:{1:300,3:765,6:1350,12:2340}
+  };
+  var LABEL={1:'1 месяц',3:'3 месяца',6:'6 месяцев',12:'1 год'};
+  var SAVE={1:0,3:15,6:25,12:35};
+  var plansEl=document.getElementById('plans');
+  var devCountEl=document.getElementById('dev-count');
+  function render(d){
+    var m=MATRIX[d]||MATRIX[2];
+    devCountEl.textContent=d;
+    var html='';
+    [1,3,6,12].forEach(function(mo){
+      var price=m[mo];
+      var permo=Math.round(price/mo);
+      var hot=(mo===6)?' hot':'';
+      var tag=(mo===6)?'<div class="tag">Хит — выбирают чаще всего</div>':'';
+      var save=SAVE[mo]?('<div class="save">выгода '+SAVE[mo]+'%</div>'):'';
+      var permoLine=(mo>1)?('<div class="permo">'+permo+' ₽ в месяц</div>'):('<div class="permo">'+price+' ₽ в месяц</div>');
+      html+='<div class="plan'+hot+'">'+tag+'<div class="per">'+LABEL[mo]+'</div><div class="price">'+price+' ₽</div>'+permoLine+save+'</div>';
+    });
+    plansEl.innerHTML=html;
+  }
+  render(2);
+  document.getElementById('dev-pills').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b)return;
+    this.querySelectorAll('button').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on');
+    render(parseInt(b.dataset.d,10));
+  });
+})();
+</script>
+</body>
+</html>

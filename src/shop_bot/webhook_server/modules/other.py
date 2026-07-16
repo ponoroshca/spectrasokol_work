@@ -54,6 +54,8 @@ def allowed_file(filename):
 # ===== ОПРЕДЕЛЕНИЕ ТИПА МЕДИА =====
 # Возвращает тип контента (фото, анимация, видео) на основе расширения
 def get_media_type(filename):
+    # .anim.mp4 — GIF, сконвертированный при загрузке: слать как animation, иначе Telegram покажет видео
+    if filename.lower().endswith('.anim.mp4'): return 'animation'
     ext = filename.rsplit('.', 1)[1].lower()
     if ext in {'png', 'jpg', 'jpeg'}: return 'photo'
     if ext == 'gif': return 'animation'
@@ -895,17 +897,37 @@ def register_other_routes(flask_app, login_required, get_common_template_data):
             loop = current_app.config.get('EVENT_LOOP')
             if not loop or not loop.is_running(): return jsonify({'ok': False, 'error': 'Цикл событий недоступен'}), 500
             
+            # Предпросмотр — всем админам (admin_telegram_id + admin_telegram_ids)
+            try:
+                from shop_bot.data_manager.remnawave_repository import get_admin_ids
+                preview_ids = sorted(get_admin_ids() or [])
+            except Exception:
+                preview_ids = []
+            if not preview_ids:
+                preview_ids = [int(admin_id)]
+
             async def send_preview():
                 preview_text = f"{text}\n\n📨 <b>Предпросмотр</b>"
-                if media_path and media_type:
-                    media_file = FSInputFile(media_path)
-                    if media_type == 'photo': await bot.send_photo(chat_id=int(admin_id), photo=media_file, caption=preview_text, parse_mode='HTML', reply_markup=keyboard)
-                    elif media_type == 'video': await bot.send_video(chat_id=int(admin_id), video=media_file, caption=preview_text, parse_mode='HTML', reply_markup=keyboard)
-                    elif media_type == 'animation': await bot.send_animation(chat_id=int(admin_id), animation=media_file, caption=preview_text, parse_mode='HTML', reply_markup=keyboard)
-                else: await bot.send_message(chat_id=int(admin_id), text=preview_text, parse_mode='HTML', reply_markup=keyboard)
-            
-            asyncio.run_coroutine_threadsafe(send_preview(), loop).result(timeout=10)
-            return jsonify({'ok': True, 'message': 'Предпросмотр отправлен администратору'})
+                errors = []
+                for _aid in preview_ids:
+                    try:
+                        if media_path and media_type:
+                            media_file = FSInputFile(media_path)
+                            if media_type == 'photo': await bot.send_photo(chat_id=int(_aid), photo=media_file, caption=preview_text, parse_mode='HTML', reply_markup=keyboard)
+                            elif media_type == 'video': await bot.send_video(chat_id=int(_aid), video=media_file, caption=preview_text, parse_mode='HTML', reply_markup=keyboard)
+                            elif media_type == 'animation': await bot.send_animation(chat_id=int(_aid), animation=media_file, caption=preview_text, parse_mode='HTML', reply_markup=keyboard)
+                        else: await bot.send_message(chat_id=int(_aid), text=preview_text, parse_mode='HTML', reply_markup=keyboard)
+                    except Exception as _e:
+                        errors.append(f"{_aid}: {_e}")
+                        logger.warning(f"Предпросмотр рассылки: не доставлен админу {_aid}: {_e}")
+                return errors
+
+            _errors = asyncio.run_coroutine_threadsafe(send_preview(), loop).result(timeout=30)
+            if _errors and len(_errors) == len(preview_ids):
+                return jsonify({'ok': False, 'error': '; '.join(_errors)}), 502
+            msg = f'Предпросмотр отправлен ({len(preview_ids) - len(_errors)}/{len(preview_ids)} админам)'
+            if _errors: msg += '; не доставлен: ' + '; '.join(_errors)
+            return jsonify({'ok': True, 'message': msg})
         except Exception as e:
             logger.error(f"Ошибка отправки предпросмотра: {e}")
             return jsonify({'ok': False, 'error': str(e)}), 500
@@ -926,8 +948,29 @@ def register_other_routes(flask_app, login_required, get_common_template_data):
             unique_filename = f"{uuid.uuid4().hex}_{filename}"
             filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
             file.save(filepath)
-            
+
             media_type = get_media_type(filename)
+
+            # GIF → MP4: «нестандартные» гифки (например, с айфона) Telegram доставляет документом.
+            # MP4 без звука Telegram всегда показывает как гифку. При ошибке ffmpeg оставляем GIF как есть.
+            if filename.rsplit('.', 1)[-1].lower() == 'gif':
+                import subprocess
+                mp4_filename = unique_filename.rsplit('.', 1)[0] + '.anim.mp4'
+                mp4_path = os.path.join(UPLOAD_FOLDER, mp4_filename)
+                try:
+                    subprocess.run(
+                        ['ffmpeg', '-y', '-i', filepath,
+                         '-movflags', 'faststart', '-pix_fmt', 'yuv420p',
+                         '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', '-an', mp4_path],
+                        capture_output=True, timeout=120, check=True,
+                    )
+                    if os.path.exists(mp4_path) and os.path.getsize(mp4_path) > 0:
+                        os.remove(filepath)
+                        unique_filename, filepath, media_type = mp4_filename, mp4_path, 'animation'
+                        logger.info(f"Рассылка: GIF сконвертирован в MP4: {mp4_filename}")
+                except Exception as conv_err:
+                    logger.warning(f"Рассылка: не удалось конвертировать GIF в MP4 ({conv_err}), отправится как есть.")
+
             return jsonify({'ok': True, 'filename': unique_filename, 'media_type': media_type, 'path': filepath})
         except Exception as e:
             logger.error(f"Ошибка загрузки медиа: {e}")
@@ -952,9 +995,24 @@ def register_other_routes(flask_app, login_required, get_common_template_data):
             all_users = rw_repo.get_all_users() or []
             
             if mode == 'test':
-                admin_id, error = get_admin_id_safe()
-                if error: return error
-                all_users = [{'telegram_id': int(admin_id), 'is_banned': False}]
+                import re as _re
+                # Явные ID из поля «ID для тестовой отправки» (через запятую/пробел); пусто → все админы
+                test_ids_raw = (request.form.get('test_user_id') or '').strip()
+                if test_ids_raw:
+                    ids = [p for p in _re.split(r'[\s,;]+', test_ids_raw) if p.lstrip('-').isdigit()]
+                    if not ids:
+                        return jsonify({'ok': False, 'error': 'Некорректный ID для тестовой отправки'}), 400
+                else:
+                    try:
+                        from shop_bot.data_manager.remnawave_repository import get_admin_ids
+                        ids = [str(i) for i in sorted(get_admin_ids() or [])]
+                    except Exception:
+                        ids = []
+                    if not ids:
+                        admin_id, error = get_admin_id_safe()
+                        if error: return error
+                        ids = [str(admin_id)]
+                all_users = [{'telegram_id': int(i), 'is_banned': False} for i in ids]
             elif mode == 'with_keys':
                 filtered_users = []
                 for user in all_users:

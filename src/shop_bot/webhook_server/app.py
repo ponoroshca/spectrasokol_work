@@ -3052,34 +3052,54 @@ def create_webhook_app(bot_controller_instance):
         spec = NOTIF_BY_KEY.get(key)
         if not spec:
             return _jsonify(ok=False, error='Неизвестное уведомление'), 400
-        target = (request.form.get('user_id') or '').strip() or str(get_setting('admin_telegram_id') or '').strip()
-        if not target.lstrip('-').isdigit():
+        # Явный user_id → шлём только ему; иначе — ВСЕМ админам (admin_telegram_id + admin_telegram_ids)
+        _uid = (request.form.get('user_id') or '').strip()
+        if _uid:
+            targets = [_uid]
+        else:
+            try:
+                from shop_bot.data_manager.remnawave_repository import get_admin_ids
+                targets = [str(i) for i in sorted(get_admin_ids() or [])]
+            except Exception:
+                targets = []
+            if not targets:
+                targets = [str(get_setting('admin_telegram_id') or '').strip()]
+        targets = [t for t in targets if t.lstrip('-').isdigit()]
+        if not targets:
             return _jsonify(ok=False, error='Нет получателя: укажите user_id или задайте admin_telegram_id'), 400
         token = (get_setting('telegram_bot_token') or '').strip()
         if not token:
             return _jsonify(ok=False, error='Не задан токен бота'), 400
         text = render_sample(key)
-        payload = {"chat_id": int(target), "text": text, "parse_mode": spec.get('parse_mode', 'HTML'), "disable_web_page_preview": True}
         try:
             from shop_bot.bot.handlers import _get_telegram_webapp_url
             _wurl = _get_telegram_webapp_url()
         except Exception:
             _wurl = None
         _rows = inline_keyboard_rows(notif_buttons(key, webapp_url=_wurl, key_id="1"))
-        if _rows:
-            payload["reply_markup"] = {"inline_keyboard": _rows}
-        try:
-            r = _rq.post(
-                f"https://api.telegram.org/bot{token}/sendMessage",
-                json=payload,
-                timeout=20,
-            )
-            j = r.json()
-            if j.get('ok'):
-                return _jsonify(ok=True)
-            return _jsonify(ok=False, error=j.get('description') or 'Ошибка Telegram')
-        except Exception as e:
-            return _jsonify(ok=False, error=str(e))
+        sent, errors = 0, []
+        for target in targets:
+            payload = {"chat_id": int(target), "text": text, "parse_mode": spec.get('parse_mode', 'HTML'), "disable_web_page_preview": True}
+            if _rows:
+                payload["reply_markup"] = {"inline_keyboard": _rows}
+            try:
+                r = _rq.post(
+                    f"https://api.telegram.org/bot{token}/sendMessage",
+                    json=payload,
+                    timeout=20,
+                )
+                j = r.json()
+                if j.get('ok'):
+                    sent += 1
+                else:
+                    errors.append(f"{target}: {j.get('description') or 'Ошибка Telegram'}")
+            except Exception as e:
+                errors.append(f"{target}: {e}")
+        if sent and not errors:
+            return _jsonify(ok=True, sent=sent)
+        if sent:
+            return _jsonify(ok=True, sent=sent, error='; '.join(errors))
+        return _jsonify(ok=False, error='; '.join(errors) or 'Ошибка Telegram')
 
     @flask_app.route('/api/settings/update-pay-info', methods=['POST'])
     @login_required

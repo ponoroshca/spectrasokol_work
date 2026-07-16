@@ -312,7 +312,7 @@ NOTIFICATIONS: list[dict] = [
         "placeholders": [],
         "default": "🚫 Ваш аккаунт заблокирован администратором. Если это ошибка — напишите в поддержку.",
         "buttons": [
-            {"id": "support", "label": "🆘 Написать в поддержку", "url": "https://t.me/VPN_Alma_Support_bot"},
+            {"id": "support", "label": "🆘 Написать в поддержку", "url": "https://t.me/SpectraSokol_Support_bot"},
         ],
     },
     {
@@ -357,7 +357,7 @@ NOTIFICATIONS: list[dict] = [
         "default": "➖ С вашего баланса списано {amount} RUB администратором.\nЕсли это ошибка — напишите в поддержку.",
         "buttons": [
             {"id": "profile", "label": "👤 Профиль", "screen": "profile"},
-            {"id": "support", "label": "🆘 Поддержка", "url": "https://t.me/VPN_Alma_Support_bot"},
+            {"id": "support", "label": "🆘 Поддержка", "url": "https://t.me/SpectraSokol_Support_bot"},
         ],
     },
     {
@@ -452,7 +452,7 @@ NOTIFICATIONS: list[dict] = [
         "placeholders": [],
         "default": "🚫 Ваш аккаунт был заблокирован администратором. Если это ошибка — свяжитесь с поддержкой.",
         "buttons": [
-            {"id": "support", "label": "🆘 Написать в поддержку", "url": "https://t.me/VPN_Alma_Support_bot"},
+            {"id": "support", "label": "🆘 Написать в поддержку", "url": "https://t.me/SpectraSokol_Support_bot"},
         ],
     },
     {
@@ -710,7 +710,7 @@ SAMPLE_CONTEXT: dict[str, str] = {
     "user_id": "123456789",
     "plan": "1 мес · 2 устройства",
     "method": "ЮKassa",
-    "host": "Alma",
+    "host": "SpectraSokol",
     "ticket_id": "42",
     "hours": "24",
     "months": "1",

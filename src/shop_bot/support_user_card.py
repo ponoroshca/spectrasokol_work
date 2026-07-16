@@ -187,7 +187,7 @@ def _format_bytes(num: Any) -> str:
 
 
 def _remna_service_id(remna_user: dict | None, key: dict | None = None) -> str | None:
-    """Числовой ID услуги в Remnawave (как 11806 в AlmaVPN_11806)."""
+    """Числовой ID услуги в Remnawave (как 11806 в SpectraSokol_11806)."""
     if remna_user:
         for field in ("id", "userId", "userNumber"):
             val = remna_user.get(field)
@@ -209,13 +209,13 @@ def _remna_service_id(remna_user: dict | None, key: dict | None = None) -> str |
 
 
 def _brand_vpn_slug() -> str:
-    brand = (get_setting("panel_brand_title") or "Alma VPN").strip()
+    brand = (get_setting("panel_brand_title") or "SpectraSokol").strip()
     slug = re.sub(r"[^a-zA-Z0-9]", "", brand)
     return slug or "VPN"
 
 
 def _format_remna_service_label(remna_user: dict | None, service_id: str | None) -> str | None:
-    """Имя услуги как в WebApp (AlmaVPN_11806), не Telegram-ник."""
+    """Имя услуги как в WebApp (SpectraSokol_11806), не Telegram-ник."""
     u = remna_user or {}
     rw = str(u.get("username") or "").strip()
     sid = service_id or _remna_service_id(remna_user, None)
